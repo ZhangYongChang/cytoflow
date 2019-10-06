@@ -21,13 +21,13 @@
     </div>
     <div id="showview" style="height:20px;width:1300px;float:left;">
       <div>
+        <p v-html="msg"></p>
+      </div>
+      <div>
         <Experiment v-for="(value, key) in showtubor"
                   :key="key"
                   :item="value">
         </Experiment>
-      </div>
-      <div>
-        <p v-html="msg"></p>
       </div>
     </div>
   </div>
