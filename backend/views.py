@@ -122,39 +122,39 @@ def gen_tubor_fig(fullpath):
     color = ['tab:red']
     meta, df = fcsparser.parse(fullpath)
     fig, ((ax11, ax12, ax13), (ax21, ax22, ax23), (ax31, ax32, ax33)) = plt.subplots(3, 3,  figsize=(12.0 , 12.0))
-    ax11.scatter(df['FSC-A'] / 1000, df['SSC-A'] / 1000, s=4, c=color, alpha=0.5)
+    ax11.scatter(df['FSC-A'] / 1000, df['SSC-A'] / 1000, s=2, c=color, alpha=0.5)
     axis_prop(ax11, 'linear', 'linear', "", "FSC-A", "SSC-A")
 
-    ax12.scatter(df['SSC-A'] / 1000, df['PerCP-A'], s=4, c=color, alpha=0.5)
+    ax12.scatter(df['SSC-A'] / 1000, df['PerCP-A'], s=2, c=color, alpha=0.5)
     axis_prop(ax12, "linear", "log", "", "SSC-A", "PerCP-A")
     ax12.set_ylim(10**1, 10**5)
 
-    ax13.scatter(df['FITC-A'], df['PE-A'], s=4, c=color, alpha=0.5)
+    ax13.scatter(df['FITC-A'], df['PE-A'], s=2, c=color, alpha=0.5)
     axis_prop(ax13, "log", "log", "", "FITC-A", "PE-A")
     ax13.set_xlim(10**1, 10**5)
     ax13.set_ylim(10**1, 10**5)
 
-    ax21.scatter(df['FITC-A'], df['PE-Cy7-A'], s=4, c=color, alpha=0.5)
+    ax21.scatter(df['FITC-A'], df['PE-Cy7-A'], s=2, c=color, alpha=0.5)
     axis_prop(ax21, "log", "log", "", "FITC-A", "PE-Cy7-A")
     ax21.set_xlim(10**1, 10**5)
     ax21.set_ylim(10**1, 10**5)
 
-    ax22.scatter(df['APC-A'], df['APC-Cy7-A'], s=4, c=color, alpha=0.5)
+    ax22.scatter(df['APC-A'], df['APC-Cy7-A'], s=2, c=color, alpha=0.5)
     axis_prop(ax22, "log", "log", "", "FITC-A", "PE-Cy7-A")
     ax22.set_xlim(10**1, 10**5)
     ax22.set_ylim(10**1, 10**5)
 
-    ax23.scatter(df['FITC-A'], df['APC-A'], s=4, c=color, alpha=0.5)
+    ax23.scatter(df['FITC-A'], df['APC-A'], s=2, c=color, alpha=0.5)
     axis_prop(ax23, "log", "log", "", "FITC-A", "APC-A")
     ax23.set_xlim(10**1, 10**5)
     ax23.set_ylim(10**1, 10**5)
 
-    ax31.scatter(df['PE-Cy7-A'], df['APC-Cy7-A'], s=4, c=color, alpha=0.5)
+    ax31.scatter(df['PE-Cy7-A'], df['APC-Cy7-A'], s=2, c=color, alpha=0.5)
     axis_prop(ax31, "log", "log", "", "PE-Cy7-A", "APC-Cy7-A")
     ax31.set_xlim(10**1, 10**5)
     ax31.set_ylim(10**1, 10**5)
 
-    ax32.scatter(df['PE-A'], df['PE-Cy7-A'], s=4, c=color, alpha=0.5)
+    ax32.scatter(df['PE-A'], df['PE-Cy7-A'], s=2, c=color, alpha=0.5)
     axis_prop(ax32, "log", "log", "", "PE-A", "PE-Cy7-A")
     ax32.set_xlim(10**1, 10**5)
     ax32.set_ylim(10**1, 10**5)
