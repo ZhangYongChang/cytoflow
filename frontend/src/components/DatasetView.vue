@@ -20,10 +20,15 @@
       </div>
     </div>
     <div id="showview" style="height:20px;width:1300px;float:left;">
-      <Experiment v-for="(value, key) in showtubor"
+      <div>
+        <Experiment v-for="(value, key) in showtubor"
                   :key="key"
                   :item="value">
-      </Experiment>
+        </Experiment>
+      </div>
+      <div>
+        <p v-html="msg"></p>
+      </div>
     </div>
   </div>
 </template>
@@ -40,10 +45,15 @@ export default {
       datasets: {},
       selectdataset: {},
       selecttubor: {},
-      showtubor: {}
+      showtubor: {},
+      figview: {},
+      msg: ''
     }
   },
   watch: {
+    figview (newVal, oldVal) {
+      this.msg = '<img src="data:image/png;base64,' + newVal['img'] + '"/>'
+    },
     selecttubor (newVal, oldVal) {
       let showGroup = [
         ['FSC-A', 'SSC-A'],
@@ -108,6 +118,10 @@ export default {
 
       this.$axios.post('/api/get_tubor', data)
         .then(response => (this.selecttubor = response['data']))
+        .catch(function (error) { console.log(error) })
+
+      this.$axios.post('/api/get_tubor_fig', data)
+        .then(response => (this.figview = response['data']))
         .catch(function (error) { console.log(error) })
     }
   }
