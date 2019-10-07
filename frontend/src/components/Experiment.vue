@@ -1,7 +1,6 @@
 <template>
   <div>
-    <div :id="viewid"
-         style="height:400px;width:400px;float:left;"></div>
+    <div :id="viewid" style="height:400px;width:400px;float:left;"></div>
   </div>
 </template>
 

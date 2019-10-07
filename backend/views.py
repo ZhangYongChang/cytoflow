@@ -183,3 +183,17 @@ def get_tubor_fig(request):
         response['error_num'] = 1
 
     return JsonResponse(response)
+
+@require_http_methods(["POST"])
+def create_patient(request):
+    params = json.loads(request.body)
+    response = {}
+    try:
+        
+        response['msg'] = 'success'
+        response['error_num'] = 0
+    except Exception as e:
+        response['msg'] = str(e)
+        response['error_num'] = 1
+
+    return JsonResponse(response)

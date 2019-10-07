@@ -1,5 +1,5 @@
 <template>
-  <div id="datasetview">
+  <div>
     <div id="selectmenu">
       <p @click="onClickDatasetView">DatasetView</p>
       <ol>
@@ -23,29 +23,18 @@
       <div>
         <p v-html="msg"></p>
       </div>
-      <div>
-        <Experiment v-for="(value, key) in showtubor"
-                  :key="key"
-                  :item="value">
-        </Experiment>
-      </div>
     </div>
   </div>
 </template>
 
 <script>
-import Experiment from './Experiment'
 export default {
-  name: 'DatasetView',
-  components: {
-    Experiment
-  },
+  name: 'ReportGenView',
   data () {
     return {
       datasets: {},
       selectdataset: {},
       selecttubor: {},
-      showtubor: {},
       figview: {},
       msg: ''
     }
@@ -53,47 +42,6 @@ export default {
   watch: {
     figview (newVal, oldVal) {
       this.msg = '<img src="data:image/png;base64,' + newVal['img'] + '"/>'
-    },
-    selecttubor (newVal, oldVal) {
-      let showGroup = [
-        ['FSC-A', 'SSC-A'],
-        ['SSC-A', 'PerCP-A'],
-        ['FITC-A', 'PE-A'],
-        ['FITC-A', 'PE-Cy7-A'],
-        ['APC-A', 'APC-Cy7-A'],
-        ['FITC-A', 'APC-A'],
-        ['PE-Cy7-A', 'APC-Cy7-A'],
-        ['PE-A', 'PE-Cy7-A']
-      ]
-
-      function getAxisData (tmptubor, xaxis, yaxis) {
-        var result = []
-        var xarray = tmptubor[xaxis]
-        var yarray = tmptubor[yaxis]
-        for (let index = 0; index < xarray.length; index++) {
-          result.push([xarray[index], yarray[index]])
-        }
-        return result
-      }
-
-      function getKey (tmptubor, xaxis, yaxis) {
-        return tmptubor['subdir'] + '/' + tmptubor['filename'] + '(' + xaxis + ',' + yaxis + ')'
-      }
-
-      this.showtubor = {}
-      for (var j = 0, len = showGroup.length; j < len; j++) {
-        let groupitem = showGroup[j]
-        var xaxis = groupitem[0]
-        var yaxis = groupitem[1]
-        let data = getAxisData(newVal, xaxis, yaxis)
-        let key = getKey(newVal, xaxis, yaxis)
-        this.showtubor[key] = {
-          'key': key,
-          'xaxis': xaxis,
-          'yaxis': yaxis,
-          'data': data
-        }
-      }
     }
   },
   methods: {
@@ -116,8 +64,8 @@ export default {
         'subdir': key
       }
 
-      this.$axios.post('/api/get_tubor', data)
-        .then(response => (this.selecttubor = response['data']))
+      this.$axios.post('/api/get_tubor_fig', data)
+        .then(response => (this.figview = response['data']))
         .catch(function (error) { console.log(error) })
     }
   }
