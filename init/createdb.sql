@@ -5,7 +5,7 @@ use `cytoflow`;
 DROP TABLE IF EXISTS `patientinfo`;
 CREATE TABLE `patientinfo` (
   `patientid` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(20) DEFAULT NULL,
+  `name` varchar(16) DEFAULT NULL,
   `sex` varchar(8) DEFAULT NULL,
   `age` int(11) DEFAULT NULL,
   PRIMARY KEY (`patientid`)

@@ -8,4 +8,5 @@ urlpatterns = [
     url('get_tubor_columns', views.get_tubor_columns, ),
     url('get_tubor_fig', views.get_tubor_fig, ),
     url('get_tubor', views.get_tubor, ),
+    url('create_patient', views.create_patient, ),
 ]

@@ -1,7 +1,7 @@
 <template>
   <div>
     <form
-      action="/api/"
+      action="/api/create_patient"
       method="POST"
       enctype="application/x-www-form-urlencoded"
     >
@@ -10,6 +10,11 @@
         :model="model"
         :options="formOptions"
       ></vue-form-generator>
+      <input
+        @click="onCommit"
+        type="submit"
+        value="提交"
+      >
     </form>
   </div>
 </template>
@@ -39,6 +44,7 @@ export default {
         collecttime: '2014-07-01',
         recvtime: '2014-07-02'
       },
+      result: {},
       schema: {
         groups: [
           {
@@ -181,6 +187,13 @@ export default {
         validateAfterLoad: true,
         validateAfterChanged: true
       }
+    }
+  },
+  methods: {
+    onCommit () {
+      this.$axios.post('/api/create_patient', this.model)
+        .then(response => (this.result = response['data']))
+        .catch(function (error) { console.log(error) })
     }
   }
 }

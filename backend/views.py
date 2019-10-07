@@ -1,3 +1,7 @@
+from numpy.core.multiarray import arange
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.mlab import bivariate_normal
 from django.views.decorators.http import require_http_methods
 from django.shortcuts import render
 from django.http import JsonResponse
@@ -9,11 +13,8 @@ import numpy
 import io
 import base64
 import matplotlib
+from backend.models import PatientInfo
 matplotlib.use('agg')
-from matplotlib.mlab import bivariate_normal
-import matplotlib.pyplot as plt
-import numpy as np
-from numpy.core.multiarray import arange
 
 rootdir = '/mnt/dataset'
 # Create your views here.
@@ -21,7 +22,8 @@ rootdir = '/mnt/dataset'
 def list_flowmetory(request):
     response = {}
     try:
-        response['subdirs']  = [file for file in os.listdir(rootdir) if os.path.isdir(rootdir + '/' + file)]
+        response['subdirs'] = [file for file in os.listdir(
+            rootdir) if os.path.isdir(rootdir + '/' + file)]
         response['msg'] = 'success'
         response['error_num'] = 0
     except Exception as e:
@@ -30,13 +32,15 @@ def list_flowmetory(request):
 
     return JsonResponse(response)
 
+
 @require_http_methods(["POST"])
 def list_directory_tubor(request):
     params = json.loads(request.body)
     subdir = params['subdir']
     response = {}
     try:
-        tubors = [file for file in os.listdir(rootdir + '/' + subdir) if re.search('.fcs$', file)]
+        tubors = [file for file in os.listdir(
+            rootdir + '/' + subdir) if re.search('.fcs$', file)]
         response['subdir'] = subdir
         response['files'] = tubors
         response['msg'] = 'success'
@@ -46,6 +50,7 @@ def list_directory_tubor(request):
         response['error_num'] = 1
 
     return JsonResponse(response)
+
 
 @require_http_methods(["POST"])
 def get_tubor_columns(request):
@@ -63,6 +68,7 @@ def get_tubor_columns(request):
         response['error_num'] = 1
 
     return JsonResponse(response)
+
 
 @require_http_methods(["POST"])
 def get_tubor_scatter(request):
@@ -84,6 +90,7 @@ def get_tubor_scatter(request):
 
     return JsonResponse(response)
 
+
 @require_http_methods(["POST"])
 def get_tubor(request):
     params = json.loads(request.body)
@@ -104,12 +111,14 @@ def get_tubor(request):
 
     return JsonResponse(response)
 
+
 def forward(x):
     return x / 1000
 
 
 def inverse(x):
     return x * 1000
+
 
 def axis_prop(ax, xaxis, yaxis, title, xtitle, ytitle):
     ax.set_xscale(xaxis)
@@ -118,11 +127,14 @@ def axis_prop(ax, xaxis, yaxis, title, xtitle, ytitle):
     ax.set_xlabel(xtitle)
     ax.set_ylabel(ytitle)
 
+
 def gen_tubor_fig(fullpath):
     color = ['tab:red']
     meta, df = fcsparser.parse(fullpath)
-    fig, ((ax11, ax12, ax13), (ax21, ax22, ax23), (ax31, ax32, ax33)) = plt.subplots(3, 3,  figsize=(12.0 , 12.0))
-    ax11.scatter(df['FSC-A'] / 1000, df['SSC-A'] / 1000, s=2, c=color, alpha=0.5)
+    fig, ((ax11, ax12, ax13), (ax21, ax22, ax23), (ax31, ax32, ax33)
+          ) = plt.subplots(3, 3,  figsize=(12.0, 12.0))
+    ax11.scatter(df['FSC-A'] / 1000, df['SSC-A'] /
+                 1000, s=2, c=color, alpha=0.5)
     axis_prop(ax11, 'linear', 'linear', "", "FSC-A", "SSC-A")
 
     ax12.scatter(df['SSC-A'] / 1000, df['PerCP-A'], s=2, c=color, alpha=0.5)
@@ -165,6 +177,7 @@ def gen_tubor_fig(fullpath):
     imagebuf.close()
     return figbytes.decode()
 
+
 @require_http_methods(["POST"])
 def get_tubor_fig(request):
     params = json.loads(request.body)
@@ -184,12 +197,15 @@ def get_tubor_fig(request):
 
     return JsonResponse(response)
 
+
 @require_http_methods(["POST"])
 def create_patient(request):
     params = json.loads(request.body)
     response = {}
     try:
-        
+        obj = PatientInfo(name=params['name'], sex = params['sex'], age = params['age'])
+        obj.save()
+        response['data'] = obj.to_json()
         response['msg'] = 'success'
         response['error_num'] = 0
     except Exception as e:
