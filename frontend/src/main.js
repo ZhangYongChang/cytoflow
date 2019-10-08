@@ -5,7 +5,10 @@ import App from './App'
 import axios from 'axios'
 import echarts from 'echarts'
 import ecStat from 'echarts-stat'
+import ElementUI from 'element-ui'
+import 'element-ui/lib/theme-chalk/index.css'
 
+Vue.use(ElementUI)
 Vue.prototype.$axios = axios
 Vue.prototype.$echarts = echarts
 Vue.prototype.$ecStat = ecStat
