@@ -1,0 +1,19 @@
+db:
+  image: mysql
+  expose:
+    - "3306"
+  volumes:
+    - ./db:/var/lib/mysql
+  environment:
+    - MYSQL_DATABASE=cytoflow
+    - MYSQL_ROOT_PASSWORD=vislecaina
+
+webapp:
+  build: .
+  command: python3 /build/cytoflow/manage.py runserver 0.0.0.0:8000
+  volumes:
+    - ../:/build/cytoflow
+  ports:
+    - "8000:8000"
+  links:
+    - db
