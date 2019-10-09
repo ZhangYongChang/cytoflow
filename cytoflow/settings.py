@@ -86,8 +86,8 @@ DATABASES = {
         'NAME': 'cytoflow',
         'USER': 'root',
         'PASSWORD': 'vislecaina',
-        'HOST': '127.0.0.1',
-        'PORT': '33060',
+        'HOST': 'db',
+        'PORT': '3306',
     }
 }
 
