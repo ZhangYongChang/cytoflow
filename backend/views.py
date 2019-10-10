@@ -16,7 +16,7 @@ import matplotlib
 from backend.models import PatientInfo
 matplotlib.use('agg')
 
-rootdir = '/mnt/dataset'
+rootdir = 'datasets'
 # Create your views here.
 @require_http_methods(["POST"])
 def list_flowmetory(request):
@@ -203,7 +203,8 @@ def create_patient(request):
     params = json.loads(request.body)
     response = {}
     try:
-        obj = PatientInfo(name=params['name'], sex = params['sex'], age = params['age'])
+        obj = PatientInfo(name=params['name'],
+                          sex=params['sex'], age=params['age'])
         obj.save()
         response['data'] = obj.to_json()
         response['msg'] = 'success'
