@@ -3,17 +3,13 @@
     <div id="selectmenu">
       <p @click="onClickDatasetView">DatasetView</p>
       <ol>
-        <li v-for="subdir in datasets['subdirs']"
-            :key="subdir"
-            @click="onClickExperiment(subdir)">
+        <li v-for="subdir in datasets['subdirs']" :key="subdir" @click="onClickExperiment(subdir)">
           {{ subdir }}
         </li>
       </ol>
       <div id="tuborlist">
         <ol>
-          <li v-for="(value, index) in selectdataset['files']"
-              :key="index"
-              @click="onClickTubor(selectdataset['subdir'], value, index)">
+          <li v-for="(value, index) in selectdataset['files']" :key="index" @click="onClickTubor(selectdataset['subdir'], value, index)">
             {{ selectdataset['subdir'] }}: {{ value }}
           </li>
         </ol>
@@ -24,9 +20,7 @@
         <p v-html="msg"></p>
       </div>
       <div>
-        <Experiment v-for="(value, key) in showtubor"
-                  :key="key"
-                  :item="value">
+        <Experiment v-for="(value, key) in showtubor" :key="key" :item="value" v-on:figSelect="figSelect" v-on:figDel="figDel">
         </Experiment>
       </div>
     </div>
@@ -47,7 +41,8 @@ export default {
       selecttubor: {},
       showtubor: {},
       figview: {},
-      msg: ''
+      msg: '',
+      selectfig: {}
     }
   },
   watch: {
@@ -56,14 +51,14 @@ export default {
     },
     selecttubor (newVal, oldVal) {
       let showGroup = [
-        ['FSC-A', 'SSC-A'],
-        ['SSC-A', 'PerCP-A'],
-        ['FITC-A', 'PE-A'],
-        ['FITC-A', 'PE-Cy7-A'],
-        ['APC-A', 'APC-Cy7-A'],
-        ['FITC-A', 'APC-A'],
-        ['PE-Cy7-A', 'APC-Cy7-A'],
-        ['PE-A', 'PE-Cy7-A']
+        ['FSC-A', 'SSC-A', 'linearlinear'],
+        ['SSC-A', 'PerCP-A', 'linearlog'],
+        ['FITC-A', 'PE-A', 'loglog'],
+        ['FITC-A', 'PE-Cy7-A', 'loglog'],
+        ['APC-A', 'APC-Cy7-A', 'loglog'],
+        ['FITC-A', 'APC-A', 'loglog'],
+        ['PE-Cy7-A', 'APC-Cy7-A', 'loglog'],
+        ['PE-A', 'PE-Cy7-A', 'loglog']
       ]
 
       function getAxisData (tmptubor, xaxis, yaxis) {
@@ -85,13 +80,15 @@ export default {
         let groupitem = showGroup[j]
         var xaxis = groupitem[0]
         var yaxis = groupitem[1]
+        let type = groupitem[2]
         let data = getAxisData(newVal, xaxis, yaxis)
         let key = getKey(newVal, xaxis, yaxis)
         this.showtubor[key] = {
           'key': key,
           'xaxis': xaxis,
           'yaxis': yaxis,
-          'data': data
+          'data': data,
+          'type': type
         }
       }
     }
@@ -119,6 +116,14 @@ export default {
       this.$axios.post('/api/get_tubor', data)
         .then(response => (this.selecttubor = response['data']))
         .catch(function (error) { console.log(error) })
+    },
+    figSelect (data) {
+      this.selectfig[data['viewid']] = data
+      console.log(this.selectfig)
+    },
+    figDel (data) {
+      delete this.selectfig.data['viewid']
+      console.log(this.selectfig)
     }
   }
 }
