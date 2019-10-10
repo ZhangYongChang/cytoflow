@@ -217,12 +217,6 @@ export default {
       myChart.setOption(option, true)
       myChart.on('click', function (params) {
         console.log(params)
-        let x = param.x
-        let y = param.y;
-        let result = self.chartInstance.convertFromPixel({
-          seriesIndex: 0,
-          xAxisIndex: 0
-        }, [x, y])
       })
     }
   }
