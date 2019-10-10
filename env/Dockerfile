@@ -28,10 +28,6 @@ RUN ln -s /build/tools/nodejs/bin/node   /usr/local/bin/
 WORKDIR /build
 RUN git clone https://github.com/ZhangYongChang/cytoflow.git
 WORKDIR /build/cytoflow/frontend
-RUN npm install --ignore-scripts
-RUN npm install axios
-RUN npm install echarts
-RUN npm install echarts-stat
 
 EXPOSE 8000
 RUN cp /etc/apt/sources.list /etc/apt/sources.list.bak

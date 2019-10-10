@@ -1,0 +1,41 @@
+{
+    "terminal.integrated.fontFamily": "monospace",
+    "workbench.colorTheme": "Default Light+",
+    "editor.suggestSelection": "first",
+    "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
+    "python.jediEnabled": false,
+    "editor.minimap.enabled": false,
+    "editor.renderWhitespace": "all",
+    "editor.renderControlCharacters": true,
+    "editor.fontFamily": "monospace",
+    "explorer.confirmDelete": false,
+    "python.pythonPath": "python3",
+    "files.exclude": {
+        "**/.classpath": true,
+        "**/.project": true,
+        "**/.settings": true,
+        "**/.factorypath": true
+    },
+    "go.useLanguageServer": true,
+    "editor.fontSize": 15,
+    "editor.tabSize": 2,
+    "javascript.format.insertSpaceBeforeFunctionParenthesis": true,
+    "vetur.format.defaultFormatterOptions": {
+        "js-beautify-html": {
+          "wrap_attributes": "auto" 
+        },
+        "prettier": {
+          "semi": false,
+          "singleQuote": true
+        },
+        "prettyhtml": {
+          "printWidth": 100,
+          "singleQuote": false,
+          "wrapAttributes": false,
+          "sortAttributes": false
+        }
+      },
+    "vetur.format.defaultFormatter.js": "vscode-typescript",
+    "vetur.format.defaultFormatter.html": "js-beautify-html",
+    "editor.formatOnSave": true
+}
