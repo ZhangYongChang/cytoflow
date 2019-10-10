@@ -18,3 +18,7 @@ cd frontend
 
 让后执行 npm run build 可进行前端代码编译，在浏览器中默认绑定的本地主机端口为 8000
 http://127.0.0.1:8000/
+
+数据库刷新：
+python3 manage.py makemigrations
+python3 manage.py migrate
