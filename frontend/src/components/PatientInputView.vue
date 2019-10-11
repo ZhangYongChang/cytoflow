@@ -37,6 +37,9 @@
             <el-form-item label="医生">
               <el-input v-model="form.doctor"></el-input>
             </el-form-item>
+            <el-form-item>
+              <el-input v-model="form.caseno"></el-input>
+            </el-form-item>
             <el-form-item label="标本类型">
               <el-select v-model="form.specimentype" placeholder="请选择标本类型">
                 <el-option label="骨髓" value="GUSHUI"></el-option>

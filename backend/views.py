@@ -13,7 +13,8 @@ import numpy
 import io
 import base64
 import matplotlib
-from backend.models import PatientInfo
+from backend.models import Specimen
+from backend.models import to_json
 matplotlib.use('agg')
 
 rootdir = 'datasets'
@@ -203,10 +204,13 @@ def create_patient(request):
     params = json.loads(request.body)
     response = {}
     try:
-        obj = PatientInfo(name=params['name'],
-                          sex=params['sex'], age=params['age'])
-        obj.save()
-        response['data'] = obj.to_json()
+        specimen = Specimen(name=params['name'], sex=params['sex'],
+                            age=params['age'], specimenno=params['specimenno'],
+                            hospital=params['hospital'], bedno=params['bedno'], doctor=params['doctor'],
+                            specimentype=params['specimentype'], caseno=params['caseno'],
+                            collecttime=params['collecttime'], recvtime=params['recvtime'])
+        specimen.save()
+        response['data'] = to_json(specimen)
         response['msg'] = 'success'
         response['error_num'] = 0
     except Exception as e:
@@ -214,3 +218,27 @@ def create_patient(request):
         response['error_num'] = 1
 
     return JsonResponse(response)
+
+
+@require_http_methods(["POST"])
+def query_patient(request):
+    params = json.load(request.body)
+    response = {}
+    try:
+        specimens = Specimen.objects.all()
+    except Exception as e:
+        response['msg'] = str(e)
+        response['error_num'] = 1
+
+@require_http_methods(["POST"])
+def query_all_specimen(request):
+    params = json.load(request.body)
+    response = {}
+    try:
+        specimenids = Specimen.objects.values('specimenid', 'name').filter(name__contains='%' + params['name'] + '%')
+        response['data'] = specimenids
+        response['msg'] = 'success'
+        response['error_num'] = 0
+    except Exception as e:
+        response['msg'] = str(e)
+        response['error_num'] = 1

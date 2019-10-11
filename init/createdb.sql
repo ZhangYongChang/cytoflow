@@ -2,20 +2,13 @@ DROP DATABASE IF EXISTS `cytoflow`;
 CREATE DATABASE `cytoflow`;
 use `cytoflow`;
 
-DROP TABLE IF EXISTS `patientinfo`;
-CREATE TABLE `patientinfo` (
-  `patientid` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(16) DEFAULT NULL,
-  `sex` varchar(8) DEFAULT NULL,
-  `age` int(11) DEFAULT NULL,
-  PRIMARY KEY (`patientid`)
-) ENGINE=InnoDB;
-
 DROP TABLE IF EXISTS `specimen`;
 CREATE TABLE `specimen` (
   `specimenid` int(11) NOT NULL AUTO_INCREMENT,
-  `patientid` int(11) NOT NULL,
-  `sepcimentno` varchar(20) DEFAULT NULL,
+  `name` varchar(16) DEFAULT NULL,
+  `sex` varchar(8) DEFAULT NULL,
+  `age` int(11) DEFAULT NULL,
+  `specimenno` varchar(20) DEFAULT NULL,
   `hospital` varchar(20) DEFAULT NULL,
   `department` varchar(20) DEFAULT NULL,
   `bedno` varchar(20) DEFAULT NULL,

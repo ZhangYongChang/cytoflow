@@ -2,6 +2,8 @@ db:
   image: mysql
   expose:
     - "3306"
+  ports:
+    - "33060:3306"
   volumes:
     - ./db:/var/lib/mysql
   environment:
