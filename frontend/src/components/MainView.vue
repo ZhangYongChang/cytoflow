@@ -14,7 +14,6 @@
 </template>
 
 <script>
-import WelcomeView from './WelcomeView.vue'
 import DatasetView from './DatasetView.vue'
 import UploadView from './UploadView.vue'
 import PatientInputView from './PatientInputView.vue'
@@ -23,11 +22,10 @@ export default {
   name: 'MainView',
   data () {
     return {
-      currentView: 'WelcomeView'
+      currentView: 'DatasetView'
     }
   },
   components: {
-    WelcomeView,
     DatasetView,
     UploadView,
     PatientInputView,

@@ -3,7 +3,7 @@
     <div id="selectmenu">
       <p @click="onClickDatasetView">DatasetView</p>
       <ol>
-        <li v-for="subdir in datasets['subdirs']"
+        <li v-for="subdir in datasets['data']"
             :key="subdir"
             @click="onClickExperiment(subdir)">
           {{ subdir }}
@@ -11,10 +11,10 @@
       </ol>
       <div id="tuborlist">
         <ol>
-          <li v-for="(value, index) in selectdataset['files']"
+          <li v-for="(value, index) in selectdataset['fcsfilenames']"
               :key="index"
-              @click="onClickTubor(selectdataset['subdir'], value, index)">
-            {{ selectdataset['subdir'] }}: {{ value }}
+              @click="onClickTubor(selectdataset['querysubdir'], value, index)">
+            {{ selectdataset['querysubdir'] }}: {{ value }}
           </li>
         </ol>
       </div>
@@ -52,20 +52,20 @@ export default {
     },
     onClickExperiment (subdir) {
       let data = {
-        'subdir': subdir
+        'querysubdir': subdir
       }
       this.$axios.post('/api/list_directory_tubor', data)
-        .then(response => (this.selectdataset = response['data']))
+        .then(response => (this.selectdataset = response['data']['data']))
         .catch(function (error) { console.log(error) })
     },
     onClickTubor (key, value, index) {
       let data = {
         'filename': value,
-        'subdir': key
+        'querysubdir': key
       }
 
       this.$axios.post('/api/get_tubor_fig', data)
-        .then(response => (this.figview = response['data']))
+        .then(response => (this.figview = response['data']['data']))
         .catch(function (error) { console.log(error) })
     }
   }

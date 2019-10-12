@@ -21,19 +21,18 @@ class Specimen(models.Model):
     recvtime = models.DateTimeField()
     specimendir = models.CharField(max_length=64)
 
-
-def to_json(self):
-    return {
-        'specimenid': self.specimenid,
-        'name': self.name,
-        'sex': self.sex,
-        'age': self.age,
-        'specimenno': self.specimenno,
-        'hospital': self.hospital,
-        'bedno': self.bedno,
-        'doctor': self.doctor,
-        'specimentype': self.specimentype,
-        'caseno': self.caseno,
-        'collecttime': self.collecttime,
-        'recvtime': self.recvtime
-    }
+    def to_json(self):
+        return {
+            'specimenid': self.specimenid,
+            'name': self.name,
+            'sex': self.sex,
+            'age': self.age,
+            'specimenno': self.specimenno,
+            'hospital': self.hospital,
+            'bedno': self.bedno,
+            'doctor': self.doctor,
+            'specimentype': self.specimentype,
+            'caseno': self.caseno,
+            'collecttime': self.collecttime,
+            'recvtime': self.recvtime
+        }

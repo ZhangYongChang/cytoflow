@@ -3,22 +3,19 @@
     <div id="selectmenu">
       <p @click="onClickDatasetView">DatasetView</p>
       <ol>
-        <li v-for="subdir in datasets['subdirs']" :key="subdir" @click="onClickExperiment(subdir)">
+        <li v-for="subdir in datasets['data']" :key="subdir" @click="onClickExperiment(subdir)">
           {{ subdir }}
         </li>
       </ol>
       <div id="tuborlist">
         <ol>
-          <li v-for="(value, index) in selectdataset['files']" :key="index" @click="onClickTubor(selectdataset['subdir'], value, index)">
-            {{ selectdataset['subdir'] }}: {{ value }}
+          <li v-for="(value, index) in selectdataset['fcsfilenames']" :key="index" @click="onClickTubor(selectdataset['querysubdir'], value, index)">
+            {{ selectdataset['querysubdir'] }}: {{ value }}
           </li>
         </ol>
       </div>
     </div>
     <div id="showview">
-      <div>
-        <p v-html="msg"></p>
-      </div>
       <div>
         <Experiment v-for="(value, key) in showtubor" :key="key" :item="value" v-on:figSelect="figSelect" v-on:figDel="figDel">
         </Experiment>
@@ -40,15 +37,10 @@ export default {
       selectdataset: {},
       selecttubor: {},
       showtubor: {},
-      figview: {},
-      msg: '',
       selectfig: {}
     }
   },
   watch: {
-    figview (newVal, oldVal) {
-      this.msg = '<img src="data:image/png;base64,' + newVal['img'] + '"/>'
-    },
     selecttubor (newVal, oldVal) {
       let showGroup = [
         ['FSC-A', 'SSC-A', 'linearlinear'],
@@ -72,7 +64,7 @@ export default {
       }
 
       function getKey (tmptubor, xaxis, yaxis) {
-        return tmptubor['subdir'] + '/' + tmptubor['filename'] + '(' + xaxis + ',' + yaxis + ')'
+        return tmptubor['querysubdir'] + '/' + tmptubor['filename'] + '(' + xaxis + ',' + yaxis + ')'
       }
 
       this.showtubor = {}
@@ -101,20 +93,20 @@ export default {
     },
     onClickExperiment (subdir) {
       let data = {
-        'subdir': subdir
+        'querysubdir': subdir
       }
       this.$axios.post('/api/list_directory_tubor', data)
-        .then(response => (this.selectdataset = response['data']))
+        .then(response => (this.selectdataset = response['data']['data']))
         .catch(function (error) { console.log(error) })
     },
     onClickTubor (key, value, index) {
       let data = {
         'filename': value,
-        'subdir': key
+        'querysubdir': key
       }
 
       this.$axios.post('/api/get_tubor', data)
-        .then(response => (this.selecttubor = response['data']))
+        .then(response => (this.selecttubor = response['data']['data']))
         .catch(function (error) { console.log(error) })
     },
     figSelect (data) {

@@ -9,5 +9,7 @@ urlpatterns = [
     url('get_tubor_fig', views.get_tubor_fig, ),
     url('get_tubor', views.get_tubor, ),
     url('create_patient', views.create_patient, ),
-    url('query_all_specimen', views.query_all_specimen, ),
+    url('query_specimen_by_name', views.query_specimen_by_name, ),
+    url('upload_specimen', views.upload_specimen, ),
+    url('create_gate', views.create_gate, ),
 ]
