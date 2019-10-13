@@ -1,9 +1,13 @@
 from django.views.decorators.http import require_http_methods
+from backend.models import SpecimenGate
 from backend.models import Specimen
+from backend.models import Gate
+import backend.genreportools as genreportools
 import matplotlib.pyplot as plt
 import backend.errormgr as em
 import matplotlib
 import fcsparser
+import datetime
 import base64
 import numpy
 import json
@@ -11,11 +15,15 @@ import uuid
 import os
 import re
 import io
-
+import logging
 
 matplotlib.use('agg')
 
+logger = logging.getLogger('log')
 DATASET_ROOTDIR = 'datasets'
+
+CLASSFITY_X = 'SSC-A'
+CLASSFITY_Y = 'PerCP-A'
 
 
 # Create your views here.
@@ -26,6 +34,7 @@ def list_flowmetory(request):
             DATASET_ROOTDIR) if os.path.isdir(os.path.join(DATASET_ROOTDIR, file))]
         return em.create_sucess_response(subdir)
     except Exception as e:
+        logger.error(e)
         return em.create_fail_response(e, em.QUERY_SPECIMEN_FAILED)
 
 
@@ -42,6 +51,7 @@ def list_directory_tubor(request):
             'fcsfilenames': fcsfilenames
         })
     except Exception as e:
+        logger.error(e)
         return em.create_fail_response(e, em.FAIL)
 
 
@@ -60,6 +70,7 @@ def get_tubor_columns(request):
             'columns': numpy.array(df.columns).tolist()
         })
     except Exception as e:
+        logger.error(e)
         return em.create_fail_response(e, em.FAIL)
 
 
@@ -78,6 +89,7 @@ def get_tubor_scatter(request):
             y: df[y].tolist()
         })
     except Exception as e:
+        logger.error(e)
         return em.create_fail_response(e, em.FAIL)
 
 
@@ -99,6 +111,7 @@ def get_tubor(request):
             'querysubdir': querysubdir
         }, **cols))
     except Exception as e:
+        logger.error(e)
         return em.create_fail_response(e, em.FAIL)
 
 
@@ -180,6 +193,7 @@ def get_tubor_fig(request):
             'img': gen_tubor_fig(os.path.join(DATASET_ROOTDIR, querysubdir, filename))
         })
     except Exception as e:
+        logger.error(e)
         return em.create_fail_response(e, em.FAIL)
 
 
@@ -196,6 +210,7 @@ def create_patient(request):
         specimen.save()
         return em.create_sucess_response(specimen.to_json())
     except Exception as e:
+        logger.error(e)
         return em.create_fail_response(e, em.CREATE_SPECIMEN_FAILED)
 
 
@@ -208,21 +223,25 @@ def query_specimen_by_name(request):
             name__icontains=name).values('name', 'specimendir')
         result = []
         for specimen in specimens:
-            result.append({'name': specimen['name'], 'specimendir': specimen['specimendir']})
+            result.append(
+                {'name': specimen['name'], 'specimendir': specimen['specimendir']})
         return em.create_sucess_response(result)
     except Exception as e:
+        logger.error(e)
         return em.create_fail_response(e, em.FAIL)
 
 
 @require_http_methods(["POST"])
 def query_all_specimen(request):
     try:
-        params = json.load(request.body)
+        params = json.loads(request.body)
         specimens = Specimen.objects.all()
         result = []
         for specimen in specimens:
-            result.append({'name': specimen['name'], 'specimendir': specimen['specimendir']})
+            result.append(
+                {'name': specimen['name'], 'specimendir': specimen['specimendir']})
     except Exception as e:
+        logger.error(e)
         return em.create_fail_response(e, em.FAIL)
 
 
@@ -248,12 +267,72 @@ def upload_specimen(request):
         destination.close()
         return em.create_success_null()
     except Exception as e:
+        logger.error(e)
         return em.create_fail_response(e, em.FAIL)
 
 
 @require_http_methods(["POST"])
 def create_gate(request):
     try:
-        params = json.load(request.body)
+        params = json.loads(request.body)
+        now_time = datetime.datetime.now()
+        gate = SpecimenGate(specimenid=params['specimenid'], fcsfilename=params['fcsfilename'],
+                            gates=params['gates'], gatetype=params['gatetype'],
+                            createtime=now_time, modifytime=now_time)
+        gate.save()
+        return em.create_sucess_response(gate)
     except Exception as e:
+        logger.error(e)
+        return em.create_fail_response(e, em.FAIL)
+
+@require_http_methods(["POST"])
+def query_gate(request):
+    try:
+        params = json.loads(request.body)
+        specimenid=params['specimenid']
+        gates=SpecimenGate.objects.get(specimenid=specimenid)
+        result=[]
+        for gate in gates:
+            result.append(gate.to_json())
+        return em.create_sucess_response(result)
+    except Exception as e:
+        logger.error(e)
+        return em.create_fail_response(e, em.FAIL)
+
+# only one fig need stat cell num
+@require_http_methods(["POST"])
+def cell_stat(request):
+    try:
+        params = json.loads(request.body)
+        filename = params['fcsfilename']
+        specimenid = params['specimenid']
+        polygons = params['polygons']
+        specimen = Specimen.objects.get(specimenid=specimenid)
+        meta, df = fcsparser.parse(
+            os.path.join(DATASET_ROOTDIR, specimen.specimendir, filename))
+
+        points=[]
+        for i, element in enumerate(df[CLASSFITY_X]):
+            points.append([element, df[CLASSFITY_Y][i]])
+
+        gate = Gate(CLASSFITY_X, CLASSFITY_Y, polygons)
+        result = gate.stat(points)
+        return em.create_sucess_response(result)
+    except Exception as e:
+        logger.error(e)
+        return em.create_fail_response(e, em.FAIL)
+
+@require_http_methods(["POST"])
+def gen_report(request):
+    try:
+        params = json.loads(request.body)
+        specimenid = params['specimenid']
+        specimen=Specimen.objects.get(specimenid=specimenid)
+        if specimen is None:
+            return em.create_fail_response('object not exist', em.FAIL)
+
+        specimengates=SpecimenGate.objects.filter(specimenid=specimenid)
+        return em.create_sucess_response(genreportools.render_report(DATASET_ROOTDIR, specimen, specimengates))
+    except Exception as e:
+        logger.error(e)
         return em.create_fail_response(e, em.FAIL)

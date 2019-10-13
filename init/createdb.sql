@@ -23,18 +23,22 @@ CREATE TABLE `specimen` (
 
 DROP TABLE IF EXISTS `specimengate`;
 CREATE TABLE `specimengate` (
+  `specimengateid` int(11) NOT NULL AUTO_INCREMENT,
   `specimenid` int(11) NOT NULL,
   `fcsfilename` varchar(256) DEFAULT NULL,
-  `gate` varchar(256) DEFAULT NULL,
+  `gates` varchar(256) DEFAULT NULL,
+  `gatetype` int(11) NOT NULL,
   `createtime` datetime DEFAULT NULL,
-  `modifytime` datetime DEFAULT NULL
+  `modifytime` datetime DEFAULT NULL,
+  PRIMARY KEY(`specimengateid`)
 ) ENGINE=InnoDB;
 
 DROP TABLE IF EXISTS `gatetemplate`;
 CREATE TABLE `gatetemplate` (
   `gatetemplateid` int(11) NOT NULL AUTO_INCREMENT,
   `templatename` varchar(256) DEFAULT NULL,
-  `gate` varchar(1024) DEFAULT NULL,
+  `gates` varchar(1024) DEFAULT NULL,
+  `gatetype` int(11) NOT NULL,
   `createtime` datetime DEFAULT NULL,
   `modifytime` datetime DEFAULT NULL,
   PRIMARY KEY(`gatetemplateid`)
