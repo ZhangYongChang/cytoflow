@@ -21,29 +21,21 @@ CREATE TABLE `specimen` (
   PRIMARY KEY(`specimenid`)
 ) ENGINE=InnoDB;
 
-DROP TABLE IF EXISTS `specimentubor`;
-CREATE TABLE `specimentubor` (
-  `tuborid` int(11) NOT NULL AUTO_INCREMENT,
-  `specimenid` int(11) NOT NULL,
-  `filename` varchar(100) DEFAULT NULL,
-  PRIMARY KEY(`tuborid`)
-) ENGINE=InnoDB;
-
 DROP TABLE IF EXISTS `specimengate`;
 CREATE TABLE `specimengate` (
-  `gateid` int(11) NOT NULL,
-  `tuborid` int(11) DEFAULT NULL,
-  `gate` varchar(256) DEFAULT NULL,
-  `xaxis` varchar(20) DEFAULT NULL,
-  `yaxis` varchar(20) DEFAULT NULL,  
-  PRIMARY KEY(`gateid`)
- ) ENGINE=InnoDB;
-
-DROP TABLE IF EXISTS `specimentreport`;
-CREATE TABLE `specimentreport` (
-  `reportid` int(11) NOT NULL,
   `specimenid` int(11) NOT NULL,
-  `reportpath` varchar(256) DEFAULT NULL,
-  `result` varchar(256) DEFAULT NULL,
-  PRIMARY KEY(`reportid`)
- ) ENGINE=InnoDB;
+  `fcsfilename` varchar(256) DEFAULT NULL,
+  `gate` varchar(256) DEFAULT NULL,
+  `createtime` datetime DEFAULT NULL,
+  `modifytime` datetime DEFAULT NULL
+) ENGINE=InnoDB;
+
+DROP TABLE IF EXISTS `gatetemplate`;
+CREATE TABLE `gatetemplate` (
+  `gatetemplateid` int(11) NOT NULL AUTO_INCREMENT,
+  `templatename` varchar(256) DEFAULT NULL,
+  `gate` varchar(1024) DEFAULT NULL,
+  `createtime` datetime DEFAULT NULL,
+  `modifytime` datetime DEFAULT NULL,
+  PRIMARY KEY(`gatetemplateid`)
+) ENGINE=InnoDB;

@@ -1,7 +1,3 @@
-#from matplotlib.mlab import bivariate_normal
-#from numpy.core.multiarray import arange
-#import numpy as np
-#from django.shortcuts import render
 from django.views.decorators.http import require_http_methods
 from backend.models import Specimen
 import matplotlib.pyplot as plt
@@ -189,8 +185,8 @@ def get_tubor_fig(request):
 
 @require_http_methods(["POST"])
 def create_patient(request):
-    params = json.loads(request.body)
     try:
+        params = json.loads(request.body)
         randomdir = str(uuid.uuid4())
         specimen = Specimen(name=params['name'], sex=params['sex'],
                             age=params['age'], specimenno=params['specimenno'],
@@ -206,9 +202,14 @@ def create_patient(request):
 @require_http_methods(["POST"])
 def query_specimen_by_name(request):
     try:
-        params = json.load(request.body)
-        specimens = Specimen.objects.all()
-        return em.create_sucess_response(specimens)
+        params = json.loads(request.body)
+        name = params['name']
+        specimens = Specimen.objects.filter(
+            name__icontains=name).values('name', 'specimendir')
+        result = []
+        for specimen in specimens:
+            result.append({'name': specimen['name'], 'specimendir': specimen['specimendir']})
+        return em.create_sucess_response(result)
     except Exception as e:
         return em.create_fail_response(e, em.FAIL)
 
@@ -217,6 +218,10 @@ def query_specimen_by_name(request):
 def query_all_specimen(request):
     try:
         params = json.load(request.body)
+        specimens = Specimen.objects.all()
+        result = []
+        for specimen in specimens:
+            result.append({'name': specimen['name'], 'specimendir': specimen['specimendir']})
     except Exception as e:
         return em.create_fail_response(e, em.FAIL)
 
@@ -244,6 +249,7 @@ def upload_specimen(request):
         return em.create_success_null()
     except Exception as e:
         return em.create_fail_response(e, em.FAIL)
+
 
 @require_http_methods(["POST"])
 def create_gate(request):

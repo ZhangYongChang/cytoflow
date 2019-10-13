@@ -23,6 +23,8 @@ RUN tar xf node-v12.11.1-linux-x64.tar.xz \
   && ln -s /build/tools/nodejs/bin/npm   /usr/local/bin/ \
   && ln -s /build/tools/nodejs/bin/node   /usr/local/bin/
 
+RUN pip3 install django-cors-headers
+
 WORKDIR /build/cytoflow
 
 EXPOSE 8000
