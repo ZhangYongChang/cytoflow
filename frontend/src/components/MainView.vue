@@ -22,6 +22,7 @@ export default {
   name: 'MainView',
   data () {
     return {
+      activeIndex: '1',
       currentView: 'DatasetView'
     }
   },

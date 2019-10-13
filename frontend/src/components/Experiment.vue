@@ -10,8 +10,8 @@ export default {
   name: 'Experiment',
   props: {
     item: {
-      type: JSON,
-      default: JSON,
+      type: Object,
+      default: Object,
       required: true
     }
   },
