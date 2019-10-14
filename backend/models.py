@@ -64,6 +64,16 @@ class SpecimenGate(models.Model):
         }
 
 
+class SpecimenReport(models.Model):
+    class Meta:
+        db_table = 'specimenreport'
+
+    sepcimenreportid = models.AutoField(primary_key=True)
+    specimenid = models.IntegerField()
+    specimenreportpath = models.CharField(max_length=256, help_text=u'')
+    createtime = models.DateTimeField()
+
+
 class Polygon(object):
     def __init__(self, name, vectexs):
         self.vectexs = vectexs
@@ -76,10 +86,7 @@ class Polygon(object):
 class PolygonEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, Polygon):
-            return {
-                'name': obj.name,
-                'vectexs': json.dumps(obj.vectexs)
-            }
+            return {'name': obj.name, 'vectexs': json.dumps(obj.vectexs)}
         return json.JSONEncoder.default(self, obj)
 
 
@@ -102,7 +109,8 @@ class Gate(object):
             for polygon in self.polygons:
                 if isPoiWithinPoly(point, polygon.vectexs):
                     result['detail'][polygon.name].append(point)
-                    result['stat'][polygon.name] = result['stat'][polygon.name]+1
+                    result['stat'][
+                        polygon.name] = result['stat'][polygon.name] + 1
                     count = count + 1
 
         for item, key in result['stat']:

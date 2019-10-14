@@ -12,4 +12,5 @@ urlpatterns = [
     url('query_specimen_by_name', views.query_specimen_by_name, ),
     url('upload_specimen', views.upload_specimen, ),
     url('create_gate', views.create_gate, ),
+    url('gen_report', views.gen_report, ),
 ]

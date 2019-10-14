@@ -43,3 +43,12 @@ CREATE TABLE `gatetemplate` (
   `modifytime` datetime DEFAULT NULL,
   PRIMARY KEY(`gatetemplateid`)
 ) ENGINE=InnoDB;
+
+DROP TABLE IF EXISTS `specimenreport`;
+CREATE TABLE `specimenreport` (
+  `sepcimenreportid` int(11) NOT NULL AUTO_INCREMENT,
+  `specimenid` int(11) NOT NULL,
+  `specimenreportpath` varchar(1024) DEFAULT NULL,
+  `createtime` datetime DEFAULT NULL,
+  PRIMARY KEY(`sepcimenreportid`)
+) ENGINE=InnoDB;
