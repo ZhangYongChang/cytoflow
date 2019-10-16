@@ -1,8 +1,8 @@
 <template>
   <div>
-    <el-form ref="form" :model="form" label-width="80px" size="medium" hide-required-asterisk=false>
-      <el-form-item label="送检人信息">
-        <el-row :gutter="20">
+    <el-form ref="form" :model="form" label-width="100px" size="medium" hide-required-asterisk=false>
+      <el-form-item label="送检人信息" label-width="100px">
+        <el-row :gutter="30">
           <el-col :span="11">
             <el-form-item label="姓名">
               <el-input v-model="form.name"></el-input>
@@ -19,8 +19,8 @@
           </el-col>
         </el-row>
       </el-form-item>
-      <el-form-item label="标本信息">
-        <el-row :gutter="20">
+      <el-form-item label="标本信息" label-width="100px">
+        <el-row :gutter="30">
           <el-col :span="11">
             <el-form-item label="标本编号">
               <el-input v-model="form.specimenno"></el-input>
@@ -37,7 +37,7 @@
             <el-form-item label="医生">
               <el-input v-model="form.doctor"></el-input>
             </el-form-item>
-            <el-form-item>
+            <el-form-item label="病例号">
               <el-input v-model="form.caseno"></el-input>
             </el-form-item>
             <el-form-item label="标本类型">

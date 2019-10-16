@@ -1,15 +1,18 @@
 <template>
   <div>
-    <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="handleSelect">
-      <el-menu-item index="1">数据分析</el-menu-item>
-      <el-menu-item index="2">送检信息</el-menu-item>
-      <el-menu-item index="3">报表</el-menu-item>
-      <el-menu-item index="4">数据上传</el-menu-item>
-    </el-menu>
-    <div class="line"></div>
-    <div>
-      <component :is="currentView"></component>
-    </div>
+    <el-container>
+      <el-aside width="200px">
+        <el-menu :default-active="activeIndex" mode="vertical" @select="handleSelect">
+          <el-menu-item index="1">数据分析</el-menu-item>
+          <el-menu-item index="2">送检信息</el-menu-item>
+          <el-menu-item index="3">报表</el-menu-item>
+          <el-menu-item index="4">数据上传</el-menu-item>
+        </el-menu>
+      </el-aside>
+      <el-main>
+        <component :is="currentView"></component>
+      </el-main>
+    </el-container>
   </div>
 </template>
 
@@ -56,5 +59,4 @@ export default {
 </script>
 
 <style scoped>
-
 </style>

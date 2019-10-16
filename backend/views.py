@@ -26,26 +26,31 @@ CLASSFITY_X = 'SSC-A'
 CLASSFITY_Y = 'PerCP-A'
 
 
-# Create your views here.
+# query datasets direcotry from root directory ok
 @require_http_methods(["POST"])
 def list_flowmetory(request):
     try:
-        subdir = [file for file in os.listdir(
-            DATASET_ROOTDIR) if os.path.isdir(os.path.join(DATASET_ROOTDIR, file))]
+        subdir = [
+            file for file in os.listdir(DATASET_ROOTDIR)
+            if os.path.isdir(os.path.join(DATASET_ROOTDIR, file))
+        ]
         return em.create_sucess_response(subdir)
     except Exception as e:
         logger.error(e)
         return em.create_fail_response(e, em.QUERY_SPECIMEN_FAILED)
 
-
+# query directory fcs file ok
 @require_http_methods(["POST"])
 def list_directory_tubor(request):
     params = json.loads(request.body)
     querysubdir = params['querysubdir']
     response = {}
     try:
-        fcsfilenames = [filename for filename in os.listdir(
-            os.path.join(DATASET_ROOTDIR, querysubdir)) if re.search('.fcs$', filename)]
+        fcsfilenames = [
+            filename for filename in os.listdir(
+                os.path.join(DATASET_ROOTDIR, querysubdir))
+            if re.search('.fcs$', filename)
+        ]
         return em.create_sucess_response({
             'querysubdir': querysubdir,
             'fcsfilenames': fcsfilenames
@@ -65,9 +70,12 @@ def get_tubor_columns(request):
         meta, df = fcsparser.parse(
             os.path.join(DATASET_ROOTDIR, querysubdir, filename))
         return em.create_sucess_response({
-            'filename': filename,
-            'querysubdir': querysubdir,
-            'columns': numpy.array(df.columns).tolist()
+            'filename':
+            filename,
+            'querysubdir':
+            querysubdir,
+            'columns':
+            numpy.array(df.columns).tolist()
         })
     except Exception as e:
         logger.error(e)
@@ -82,8 +90,8 @@ def get_tubor_scatter(request):
         querysubdir = params['querysubdir']
         x = params['xaxis']
         y = params['yaxis']
-        meta, df = fcsparser.parse(os.path.join(
-            DATASET_ROOTDIR, querysubdir, fcsfilename))
+        meta, df = fcsparser.parse(
+            os.path.join(DATASET_ROOTDIR, querysubdir, fcsfilename))
         return em.create_sucess_response({
             x: df[x].tolist(),
             y: df[y].tolist()
@@ -92,7 +100,7 @@ def get_tubor_scatter(request):
         logger.error(e)
         return em.create_fail_response(e, em.FAIL)
 
-
+# query fcs cols point ok
 @require_http_methods(["POST"])
 def get_tubor(request):
     try:
@@ -106,10 +114,11 @@ def get_tubor(request):
             cols[col] = df[col].tolist()
         cols['filename'] = filename
         cols['querysubdir'] = querysubdir
-        return em.create_sucess_response(dict({
-            'filename': filename,
-            'querysubdir': querysubdir
-        }, **cols))
+        return em.create_sucess_response(
+            dict({
+                'filename': filename,
+                'querysubdir': querysubdir
+            }, **cols))
     except Exception as e:
         logger.error(e)
         return em.create_fail_response(e, em.FAIL)
@@ -134,10 +143,13 @@ def axis_prop(ax, xaxis, yaxis, title, xtitle, ytitle):
 def gen_tubor_fig(fullpath):
     color = ['tab:red']
     meta, df = fcsparser.parse(fullpath)
-    fig, ((ax11, ax12, ax13), (ax21, ax22, ax23), (ax31, ax32, ax33)
-          ) = plt.subplots(3, 3,  figsize=(12.0, 12.0))
-    ax11.scatter(df['FSC-A'] / 1000, df['SSC-A'] /
-                 1000, s=2, c=color, alpha=0.5)
+    fig, ((ax11, ax12, ax13), (ax21, ax22, ax23), (ax31, ax32,
+                                                   ax33)) = plt.subplots(
+                                                       3,
+                                                       3,
+                                                       figsize=(12.0, 12.0))
+    ax11.scatter(
+        df['FSC-A'] / 1000, df['SSC-A'] / 1000, s=2, c=color, alpha=0.5)
     axis_prop(ax11, 'linear', 'linear', "", "FSC-A", "SSC-A")
 
     ax12.scatter(df['SSC-A'] / 1000, df['PerCP-A'], s=2, c=color, alpha=0.5)
@@ -188,43 +200,58 @@ def get_tubor_fig(request):
         filename = params['filename']
         querysubdir = params['querysubdir']
         return em.create_sucess_response({
-            'filename': filename,
-            'querysubdir': querysubdir,
-            'img': gen_tubor_fig(os.path.join(DATASET_ROOTDIR, querysubdir, filename))
+            'filename':
+            filename,
+            'querysubdir':
+            querysubdir,
+            'img':
+            gen_tubor_fig(
+                os.path.join(DATASET_ROOTDIR, querysubdir, filename))
         })
     except Exception as e:
         logger.error(e)
         return em.create_fail_response(e, em.FAIL)
 
-
+# append specimen information ok
 @require_http_methods(["POST"])
 def create_patient(request):
     try:
         params = json.loads(request.body)
         randomdir = str(uuid.uuid4())
-        specimen = Specimen(name=params['name'], sex=params['sex'],
-                            age=params['age'], specimenno=params['specimenno'],
-                            hospital=params['hospital'], bedno=params['bedno'], doctor=params['doctor'],
-                            specimentype=params['specimentype'], caseno=params['caseno'],
-                            collecttime=params['collecttime'], recvtime=params['recvtime'], specimendir=randomdir)
+        specimen = Specimen(
+            name=params['name'],
+            sex=params['sex'],
+            age=params['age'],
+            specimenno=params['specimenno'],
+            hospital=params['hospital'],
+            bedno=params['bedno'],
+            doctor=params['doctor'],
+            specimentype=params['specimentype'],
+            caseno=params['caseno'],
+            collecttime=params['collecttime'],
+            recvtime=params['recvtime'],
+            specimendir=randomdir)
         specimen.save()
+        os.mkdir(os.path.join(DATASET_ROOTDIR, specimen.specimendir))
         return em.create_sucess_response(specimen.to_json())
     except Exception as e:
         logger.error(e)
         return em.create_fail_response(e, em.CREATE_SPECIMEN_FAILED)
 
-
+# query specimen by no ok
 @require_http_methods(["POST"])
-def query_specimen_by_name(request):
+def query_specimenno(request):
     try:
         params = json.loads(request.body)
-        name = params['name']
-        specimens = Specimen.objects.filter(
-            name__icontains=name).values('name', 'specimendir')
+        specimenno = params['specimenno']
+        specimens = Specimen.objects.filter(specimenno__contains=specimenno)
         result = []
         for specimen in specimens:
-            result.append(
-                {'name': specimen['name'], 'specimendir': specimen['specimendir']})
+            result.append({
+                'specimenno': specimen.specimenno,
+                'specimendir': specimen.specimendir,
+                'specimenid': specimen.specimenid
+            })
         return em.create_sucess_response(result)
     except Exception as e:
         logger.error(e)
@@ -238,26 +265,29 @@ def query_all_specimen(request):
         specimens = Specimen.objects.all()
         result = []
         for specimen in specimens:
-            result.append(
-                {'name': specimen['name'], 'specimendir': specimen['specimendir']})
+            result.append({
+                'name': specimen['name'],
+                'specimendir': specimen['specimendir']
+            })
     except Exception as e:
         logger.error(e)
         return em.create_fail_response(e, em.FAIL)
 
 
-# input file.name
-#   specimendir:filename
+# upload specimen file ok
 @require_http_methods(["POST"])
 def upload_specimen(request):
     try:
         file = request.FILES.get("file", None)
         filemeta = file.name
-        fileitems = filemeta.split(':')
-        if len(fileitems) != 2:
-            return em.create_fail_response('vailed param', em.PARAM_FAILED)
+        specimenid = int(request.POST['specimenid'])
+        specimen = Specimen.objects.get(specimenid=specimenid)
+        if specimen is None:
+            return em.create_fail_response('specimen is not exist', em.FAIL)
 
-        specimenfilepath = os.path.join(
-            DATASET_ROOTDIR, fileitems[0], file.name)
+        storgedir = specimen.specimendir
+        specimenfilepath = os.path.join(DATASET_ROOTDIR, storgedir,
+                                        file.name)
         if not file:
             return em.create_fail_response('no files for upload', em.FAIL)
 
@@ -276,28 +306,34 @@ def create_gate(request):
     try:
         params = json.loads(request.body)
         now_time = datetime.datetime.now()
-        gate = SpecimenGate(specimenid=params['specimenid'], fcsfilename=params['fcsfilename'],
-                            gates=params['gates'], gatetype=params['gatetype'],
-                            createtime=now_time, modifytime=now_time)
+        gate = SpecimenGate(
+            specimenid=params['specimenid'],
+            fcsfilename=params['fcsfilename'],
+            gates=params['gates'],
+            gatetype=params['gatetype'],
+            createtime=now_time,
+            modifytime=now_time)
         gate.save()
         return em.create_sucess_response(gate)
     except Exception as e:
         logger.error(e)
         return em.create_fail_response(e, em.FAIL)
 
+
 @require_http_methods(["POST"])
 def query_gate(request):
     try:
         params = json.loads(request.body)
-        specimenid=params['specimenid']
-        gates=SpecimenGate.objects.get(specimenid=specimenid)
-        result=[]
+        specimenid = params['specimenid']
+        gates = SpecimenGate.objects.get(specimenid=specimenid)
+        result = []
         for gate in gates:
             result.append(gate.to_json())
         return em.create_sucess_response(result)
     except Exception as e:
         logger.error(e)
         return em.create_fail_response(e, em.FAIL)
+
 
 # only one fig need stat cell num
 @require_http_methods(["POST"])
@@ -311,7 +347,7 @@ def cell_stat(request):
         meta, df = fcsparser.parse(
             os.path.join(DATASET_ROOTDIR, specimen.specimendir, filename))
 
-        points=[]
+        points = []
         for i, element in enumerate(df[CLASSFITY_X]):
             points.append([element, df[CLASSFITY_Y][i]])
 
@@ -322,17 +358,20 @@ def cell_stat(request):
         logger.error(e)
         return em.create_fail_response(e, em.FAIL)
 
+
 @require_http_methods(["POST"])
 def gen_report(request):
     try:
         params = json.loads(request.body)
         specimenid = params['specimenid']
-        specimen=Specimen.objects.get(specimenid=specimenid)
+        specimen = Specimen.objects.get(specimenid=specimenid)
         if specimen is None:
             return em.create_fail_response('object not exist', em.FAIL)
 
-        specimengates=SpecimenGate.objects.filter(specimenid=specimenid)
-        return em.create_sucess_response(genreportools.render_report(DATASET_ROOTDIR, specimen, specimengates))
+        specimengates = SpecimenGate.objects.filter(specimenid=specimenid)
+        return em.create_sucess_response(
+            genreportools.render_report(DATASET_ROOTDIR, specimen,
+                                        specimengates))
     except Exception as e:
         logger.error(e)
         return em.create_fail_response(e, em.FAIL)
