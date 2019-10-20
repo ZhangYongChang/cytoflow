@@ -29,10 +29,23 @@ def render_report(datasetdir, specimen, specimengates):
 
     fileuuid = str(uuid.uuid4())
     logger.info("starting gen file " + fileuuid + ".pdf")
-    htmlfilepath = os.path.join(REPORT_TEMP_DIR, fileuuid + "html")
+    htmlfilepath = os.path.join(REPORT_TEMP_DIR, fileuuid + ".html")
     pdfreportpath = os.path.join(REPORT_TEMP_DIR, fileuuid + ".pdf")
-    html = template.render(specimen=specimen.to_json())
+    html = template.render(
+        specimen=specimen.to_json(), matplotimg={
+            'img1': '',
+            'img2': ''
+        })
     file = open(htmlfilepath, 'w+')
     file.write(html)
     file.close()
-    pdfkit.from_file(htmlfilepath, pdfreportpath)
+    options = {
+        'page-size': 'Letter',
+        'margin-top': '0.75in',
+        'margin-right': '0.75in',
+        'margin-bottom': '0.75in',
+        'margin-left': '0.75in',
+        'encoding': "UTF-8",
+        'no-outline': None
+    }
+    pdfkit.from_file(htmlfilepath, pdfreportpath, options=options)

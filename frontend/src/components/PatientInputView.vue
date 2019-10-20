@@ -90,7 +90,7 @@ export default {
   },
   methods: {
     onCommit () {
-      this.$axios.post('/api/create_patient', this.form)
+      this.$axios.post('/api/create_specimen', this.form)
         .then(response => (this.result = response['data']))
         .catch(function (error) { console.log(error) })
     }

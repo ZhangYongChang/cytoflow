@@ -28,7 +28,7 @@ CLASSFITY_Y = 'PerCP-A'
 
 # query datasets direcotry from root directory ok
 @require_http_methods(["POST"])
-def list_flowmetory(request):
+def query_flowmetory(request):
     try:
         subdir = [
             file for file in os.listdir(DATASET_ROOTDIR)
@@ -38,6 +38,7 @@ def list_flowmetory(request):
     except Exception as e:
         logger.error(e)
         return em.create_fail_response(e, em.QUERY_SPECIMEN_FAILED)
+
 
 # query directory fcs file ok
 @require_http_methods(["POST"])
@@ -100,6 +101,7 @@ def get_tubor_scatter(request):
         logger.error(e)
         return em.create_fail_response(e, em.FAIL)
 
+
 # query fcs cols point ok
 @require_http_methods(["POST"])
 def get_tubor(request):
@@ -119,6 +121,31 @@ def get_tubor(request):
                 'filename': filename,
                 'querysubdir': querysubdir
             }, **cols))
+    except Exception as e:
+        logger.error(e)
+        return em.create_fail_response(e, em.FAIL)
+
+
+# query fcs cols point ok
+@require_http_methods(["POST"])
+def get_specimen_tubo(request):
+    try:
+        params = json.loads(request.body)
+        filename = params['filename']
+        specimenid = params['specimenid']
+        specimen = Specimen.objects.get(specimenid=specimenid)
+        if specimen is None:
+            logger.error('param vaild')
+
+        querysubdir = specimen.specimendir
+        cols = {}
+        meta, df = fcsparser.parse(
+            os.path.join(DATASET_ROOTDIR, querysubdir, filename))
+        for col in numpy.array(df.columns).tolist():
+            cols[col] = df[col].tolist()
+        cols['filename'] = filename
+        cols['specimenid'] = specimenid
+        return em.create_sucess_response(cols)
     except Exception as e:
         logger.error(e)
         return em.create_fail_response(e, em.FAIL)
@@ -212,9 +239,10 @@ def get_tubor_fig(request):
         logger.error(e)
         return em.create_fail_response(e, em.FAIL)
 
+
 # append specimen information ok
 @require_http_methods(["POST"])
-def create_patient(request):
+def create_specimen(request):
     try:
         params = json.loads(request.body)
         randomdir = str(uuid.uuid4())
@@ -224,6 +252,7 @@ def create_patient(request):
             age=params['age'],
             specimenno=params['specimenno'],
             hospital=params['hospital'],
+            department=params['department'],
             bedno=params['bedno'],
             doctor=params['doctor'],
             specimentype=params['specimentype'],
@@ -238,9 +267,65 @@ def create_patient(request):
         logger.error(e)
         return em.create_fail_response(e, em.CREATE_SPECIMEN_FAILED)
 
+
+#query newly specimen
+@require_http_methods(["POST"])
+def query_specimen(request):
+    try:
+        params = json.loads(request.body)
+        count = params['count']
+        specimens = Specimen.objects.all()[:20]
+        result = []
+        for specimen in specimens:
+            result.append(specimen.to_json())
+        return em.create_sucess_response(result)
+    except Exception as e:
+        logger.error(e)
+        return em.create_fail_response(e, em.FAIL)
+
+
+@require_http_methods(["POST"])
+def query_specimen_fcsfilenames(request):
+    try:
+        params = json.loads(request.body)
+        specimenid = params['specimenid']
+        specimen = Specimen.objects.get(specimenid=specimenid)
+        querysubdir = specimen.specimendir
+        response = {}
+        fcsfilenames = [
+            filename for filename in os.listdir(
+                os.path.join(DATASET_ROOTDIR, querysubdir))
+            if re.search('.fcs$', filename)
+        ]
+        return em.create_sucess_response({'fcsfilenames': fcsfilenames})
+    except Exception as e:
+        logger.error(e)
+        return em.create_fail_response(e, em.FAIL)
+
+
 # query specimen by no ok
 @require_http_methods(["POST"])
 def query_specimenno(request):
+    try:
+        params = json.loads(request.body)
+        specimenno = params['specimenno']
+        specimens = Specimen.objects.filter(specimenno__contains=specimenno)
+        result = []
+        for specimen in specimens:
+            result.append({
+                'specimenno': specimen.specimenno,
+                'specimendir': specimen.specimendir,
+                'specimenid': specimen.specimenid
+            })
+        return em.create_sucess_response(result)
+    except Exception as e:
+        logger.error(e)
+        return em.create_fail_response(e, em.FAIL)
+
+
+# query specimen by no ok
+@require_http_methods(["POST"])
+def query_specimenid(request):
     try:
         params = json.loads(request.body)
         specimenno = params['specimenno']
@@ -286,8 +371,7 @@ def upload_specimen(request):
             return em.create_fail_response('specimen is not exist', em.FAIL)
 
         storgedir = specimen.specimendir
-        specimenfilepath = os.path.join(DATASET_ROOTDIR, storgedir,
-                                        file.name)
+        specimenfilepath = os.path.join(DATASET_ROOTDIR, storgedir, file.name)
         if not file:
             return em.create_fail_response('no files for upload', em.FAIL)
 

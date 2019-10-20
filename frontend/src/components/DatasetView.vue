@@ -1,20 +1,20 @@
 <template>
   <div id="datasetview">
-    <div id="selectmenu">
-      <p @click="onClickDatasetView">DatasetView</p>
-      <ol>
-        <li v-for="subdir in datasets['data']" :key="subdir" @click="onClickExperiment(subdir)">
-          {{ subdir }}
-        </li>
-      </ol>
-      <div id="tuborlist">
-        <ol>
-          <li v-for="(value, index) in selectdataset['fcsfilenames']" :key="index" @click="onClickTubor(selectdataset['querysubdir'], value, index)">
-            {{ selectdataset['querysubdir'] }}: {{ value }}
-          </li>
-        </ol>
-      </div>
-    </div>
+    <el-row>
+      <el-col :span="24">
+        <el-select size="medium" v-model="specimenid" filterable remote reserve-keyword placeholder="请输入标本号" :remote-method="specimenSearch">
+          <el-option v-for="item in specimenoptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
+        </el-select>
+      </el-col>
+    </el-row>
+    <el-row>
+      <el-col :span="24">
+        <el-select v-model="tobo" placeholder="请选择">
+          <el-option v-for="item in tobooptions" :key="item.value" :label="item.label" :value="item.value">
+          </el-option>
+        </el-select>
+      </el-col>
+    </el-row>
     <div id="showview">
       <div>
         <Experiment v-for="(value, key) in showtubor" :key="key" :item="value" v-on:figSelect="figSelect" v-on:figDel="figDel">
@@ -33,15 +33,35 @@ export default {
   },
   data () {
     return {
-      datasets: {},
-      selectdataset: {},
-      selecttubor: {},
+      specimenlist: [],
+      specimenoptions: [],
+      specimenid: 0,
+      tobolist: [],
+      tobooptions: [],
+      tobo: '',
+      orig_tobo: [],
       showtubor: {},
       selectfig: {}
     }
   },
   watch: {
-    selecttubor (newVal, oldVal) {
+    specimenid (newVal, oldVal) {
+      this.$axios.post('/api/query_specimen_fcsfilenames', { 'specimenid': newVal })
+        .then(response => (this.tobolist = response['data']['data']['fcsfilenames']))
+        .catch(function (error) { console.log(error) })
+    },
+    tobolist (newVal, oldVal) {
+      this.tobooptions = this.tobolist.map(item => {
+        return { value: item, label: item }
+      })
+    },
+    tobo (newVal, oldVal) {
+      console.log(newVal)
+      this.$axios.post('/api/get_specimen_tubo', { 'specimenid': this.specimenid, 'filename': newVal })
+        .then(response => (this.orig_tobo = response['data']['data']))
+        .catch(function (error) { console.log(error) })
+    },
+    orig_tobo (newVal, oldVal) {
       let showGroup = [
         ['FSC-A', 'SSC-A', 'linearlinear'],
         ['SSC-A', 'PerCP-A', 'linearlog'],
@@ -64,7 +84,7 @@ export default {
       }
 
       function getKey (tmptubor, xaxis, yaxis) {
-        return tmptubor['querysubdir'] + '/' + tmptubor['filename'] + '(' + xaxis + ',' + yaxis + ')'
+        return tmptubor['specimenid'] + '/' + tmptubor['filename'] + '(' + xaxis + ',' + yaxis + ')'
       }
 
       this.showtubor = {}
@@ -73,8 +93,8 @@ export default {
         var xaxis = groupitem[0]
         var yaxis = groupitem[1]
         let type = groupitem[2]
-        let data = getAxisData(newVal, xaxis, yaxis)
-        let key = getKey(newVal, xaxis, yaxis)
+        let data = getAxisData(this.orig_tobo, xaxis, yaxis)
+        let key = getKey(this.orig_tobo, xaxis, yaxis)
         this.showtubor[key] = {
           'key': key,
           'xaxis': xaxis,
@@ -86,28 +106,13 @@ export default {
     }
   },
   methods: {
-    onClickDatasetView () {
-      this.$axios.post('/api/list_flowmetory')
-        .then(response => (this.datasets = response['data']))
+    specimenSearch (queryString) {
+      this.$axios.post('/api/query_specimenid', { 'specimenno': queryString })
+        .then(response => (this.specimenlist = response['data']['data']))
         .catch(function (error) { console.log(error) })
-    },
-    onClickExperiment (subdir) {
-      let data = {
-        'querysubdir': subdir
-      }
-      this.$axios.post('/api/list_directory_tubor', data)
-        .then(response => (this.selectdataset = response['data']['data']))
-        .catch(function (error) { console.log(error) })
-    },
-    onClickTubor (key, value, index) {
-      let data = {
-        'filename': value,
-        'querysubdir': key
-      }
-
-      this.$axios.post('/api/get_tubor', data)
-        .then(response => (this.selecttubor = response['data']['data']))
-        .catch(function (error) { console.log(error) })
+      this.specimenoptions = this.specimenlist.map(item => {
+        return { value: item['specimenid'], label: item['specimenno'] }
+      })
     },
     figSelect (data) {
       this.selectfig[data['viewid']] = data

@@ -15,6 +15,7 @@ class Specimen(models.Model):
     age = models.IntegerField()
     specimenno = models.CharField(max_length=16)
     hospital = models.CharField(max_length=64)
+    department = models.CharField(max_length=64)
     bedno = models.CharField(max_length=16)
     doctor = models.CharField(max_length=16)
     specimentype = models.CharField(max_length=16)
@@ -31,6 +32,7 @@ class Specimen(models.Model):
             'age': self.age,
             'specimenno': self.specimenno,
             'hospital': self.hospital,
+            'department': self.department,
             'bedno': self.bedno,
             'doctor': self.doctor,
             'specimentype': self.specimentype,
