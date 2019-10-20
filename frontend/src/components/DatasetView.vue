@@ -9,7 +9,7 @@
     </el-row>
     <el-row>
       <el-col :span="24">
-        <el-select v-model="tobo" placeholder="请选择">
+        <el-select v-model="tobo" placeholder="请选择试管">
           <el-option v-for="item in tobooptions" :key="item.value" :label="item.label" :value="item.value">
           </el-option>
         </el-select>
@@ -35,7 +35,7 @@ export default {
     return {
       specimenlist: [],
       specimenoptions: [],
-      specimenid: 0,
+      specimenid: '',
       tobolist: [],
       tobooptions: [],
       tobo: '',
@@ -46,7 +46,7 @@ export default {
   },
   watch: {
     specimenid (newVal, oldVal) {
-      this.$axios.post('/api/query_specimen_fcsfilenames', { 'specimenid': newVal })
+      this.$axios.post('/api/query_specimen_fcsfiles', { 'specimenid': newVal })
         .then(response => (this.tobolist = response['data']['data']['fcsfilenames']))
         .catch(function (error) { console.log(error) })
     },
@@ -57,7 +57,7 @@ export default {
     },
     tobo (newVal, oldVal) {
       console.log(newVal)
-      this.$axios.post('/api/get_specimen_tubo', { 'specimenid': this.specimenid, 'filename': newVal })
+      this.$axios.post('/api/query_specimen_tubo', { 'specimenid': this.specimenid, 'filename': newVal })
         .then(response => (this.orig_tobo = response['data']['data']))
         .catch(function (error) { console.log(error) })
     },
@@ -103,6 +103,11 @@ export default {
           'type': type
         }
       }
+    },
+    specimenlist (newVal, oldVal) {
+      this.specimenoptions = this.specimenlist.map(item => {
+        return { value: item['specimenid'], label: item['specimenno'] }
+      })
     }
   },
   methods: {
@@ -110,9 +115,6 @@ export default {
       this.$axios.post('/api/query_specimenid', { 'specimenno': queryString })
         .then(response => (this.specimenlist = response['data']['data']))
         .catch(function (error) { console.log(error) })
-      this.specimenoptions = this.specimenlist.map(item => {
-        return { value: item['specimenid'], label: item['specimenno'] }
-      })
     },
     figSelect (data) {
       this.selectfig[data['viewid']] = data
@@ -127,4 +129,10 @@ export default {
 </script>
 
 <style scoped>
+.el-row {
+  margin-bottom: 20px;
+}
+.el-col {
+  border-radius: 4px;
+}
 </style>

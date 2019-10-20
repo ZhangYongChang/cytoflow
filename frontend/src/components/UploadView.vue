@@ -9,7 +9,7 @@
     </el-row>
     <el-row>
       <el-col :span="24">
-        <el-upload ref="upload" :data="submitParam" action="/api/upload_specimen" :on-preview="handlePreview" :on-remove="handleRemove" :file-list="fileList" :auto-upload="false">
+        <el-upload ref="upload" :data="submitParam" action="/api/upload_specimen_fcsfiles" :on-preview="handlePreview" :on-remove="handleRemove" :file-list="fileList" :auto-upload="false">
           <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
           <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">上传到服务器</el-button>
           <div slot="tip">只能上传fcs文件，且不超过10M</div>
@@ -25,7 +25,7 @@ export default {
   data () {
     return {
       options: [],
-      value: 0,
+      value: '',
       fileList: [],
       specimenList: [],
       submitParam: {}
@@ -33,29 +33,26 @@ export default {
   },
   methods: {
     querySearch (queryString) {
-      this.$axios.post('/api/query_specimenno', { 'specimenno': queryString })
+      this.$axios.post('/api/query_specimenid', { 'specimenno': queryString })
         .then(response => (this.specimenList = response['data']['data']))
         .catch(function (error) { console.log(error) })
-      console.log(this.specimenList)
-      this.options = this.specimenList.map(item => {
-        return { value: item['specimenid'], label: item['specimenno'] }
-      })
-      console.log(this.options)
     },
     submitUpload () {
       this.$refs.upload.submit()
     },
     handleRemove (file, fileList) {
-      console.log(file, fileList)
     },
     handlePreview (file) {
-      console.log(file)
     },
     handleSelect (item) {
-      console.log(item)
     }
   },
   watch: {
+    specimenList: function (vaule) {
+      this.options = this.specimenList.map(item => {
+        return { value: item['specimenid'], label: item['specimenno'] }
+      })
+    },
     value: function (value) {
       this.submitParam = { 'specimenid': value }
     }

@@ -3,10 +3,10 @@
     <el-container>
       <el-aside width="200px">
         <el-menu :default-active="activeIndex" mode="vertical" @select="handleSelect">
-          <el-menu-item index="1">数据分析</el-menu-item>
-          <el-menu-item index="2">送检信息</el-menu-item>
-          <el-menu-item index="3">报表</el-menu-item>
-          <el-menu-item index="4">数据上传</el-menu-item>
+          <el-menu-item index="1">送检信息</el-menu-item>
+          <el-menu-item index="2">数据上传</el-menu-item>
+          <el-menu-item index="3">数据分析</el-menu-item>
+          <el-menu-item index="4">流式报表</el-menu-item>
         </el-menu>
       </el-aside>
       <el-main>
@@ -26,7 +26,7 @@ export default {
   data () {
     return {
       activeIndex: '1',
-      currentView: 'DatasetView'
+      currentView: 'PatientInputView'
     }
   },
   components: {
@@ -39,16 +39,16 @@ export default {
     handleSelect (key, keyPath) {
       switch (key) {
         case '1':
-          this.currentView = 'DatasetView'
-          break
-        case '2':
           this.currentView = 'PatientInputView'
           break
+        case '2':
+          this.currentView = 'UploadView'
+          break
         case '3':
-          this.currentView = 'ReportGenView'
+          this.currentView = 'DatasetView'
           break
         case '4':
-          this.currentView = 'UploadView'
+          this.currentView = 'ReportGenView'
           break
         default:
           break

@@ -128,7 +128,7 @@ def get_tubor(request):
 
 # query fcs cols point ok
 @require_http_methods(["POST"])
-def get_specimen_tubo(request):
+def query_specimen_tubo(request):
     try:
         params = json.loads(request.body)
         filename = params['filename']
@@ -285,7 +285,7 @@ def query_specimen(request):
 
 
 @require_http_methods(["POST"])
-def query_specimen_fcsfilenames(request):
+def query_specimen_fcsfiles(request):
     try:
         params = json.loads(request.body)
         specimenid = params['specimenid']
@@ -361,7 +361,7 @@ def query_all_specimen(request):
 
 # upload specimen file ok
 @require_http_methods(["POST"])
-def upload_specimen(request):
+def upload_specimen_fcsfiles(request):
     try:
         file = request.FILES.get("file", None)
         filemeta = file.name
@@ -386,7 +386,7 @@ def upload_specimen(request):
 
 
 @require_http_methods(["POST"])
-def create_gate(request):
+def save_spceiment_fcsfile_gate(request):
     try:
         params = json.loads(request.body)
         now_time = datetime.datetime.now()
@@ -459,3 +459,12 @@ def gen_report(request):
     except Exception as e:
         logger.error(e)
         return em.create_fail_response(e, em.FAIL)
+
+@require_http_methods(["POST"])
+def query_report(request):
+  pass
+
+
+@require_http_methods(["POST"])
+def query_specimen_report(request):
+  pass
