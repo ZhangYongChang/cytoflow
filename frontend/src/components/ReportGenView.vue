@@ -1,23 +1,21 @@
 <template>
   <div>
-    <div id="selectmenu">
-      <p @click="onClickDatasetView">DatasetView</p>
-      <ol>
-        <li v-for="subdir in datasets['data']"
-            :key="subdir"
-            @click="onClickExperiment(subdir)">
-          {{ subdir }}
-        </li>
-      </ol>
-      <div id="tuborlist">
-        <ol>
-          <li v-for="(value, index) in selectdataset['fcsfilenames']"
-              :key="index"
-              @click="onClickTubor(selectdataset['querysubdir'], value, index)">
-            {{ selectdataset['querysubdir'] }}: {{ value }}
-          </li>
-        </ol>
-      </div>
+    <div id="table">
+      <el-table :data="tableData.filter(data => !search || data.specimenno.toLowerCase().includes(search.toLowerCase()))" style="width: 100%">
+        <el-table-column label="标本编号" prop="specimenno">
+        </el-table-column>
+        <el-table-column label="ID" prop="specimenid">
+        </el-table-column>
+        <el-table-column align="right">
+          <template slot="header" slot-scope="scope">
+            <el-input v-model="search" size="mini" placeholder="输入关键字搜索" />
+          </template>
+          <template slot-scope="scope">
+            <el-button size="mini" @click="handleGen(scope.$index, scope.row)">生成</el-button>
+            <el-button size="mini" @click="handleDownload(scope.$index, scope.row)">下载</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
     </div>
     <div id="showview">
       <div>
@@ -32,41 +30,36 @@ export default {
   name: 'ReportGenView',
   data () {
     return {
-      datasets: {},
-      selectdataset: {},
-      selecttubor: {},
+      suggestSpecimen: [],
+      tableData: [],
+      search: '',
       figview: {},
-      msg: ''
+      msg: '',
+      result: ''
     }
   },
   watch: {
     figview (newVal, oldVal) {
       this.msg = '<img src="data:image/png;base64,' + newVal['img'] + '"/>'
+    },
+    suggestSpecimen (newVal, oldVal) {
+      this.tableData = newVal.map(item => {
+        return { specimenno: item['specimenno'], specimenid: item['specimenid'] }
+      })
     }
   },
+  mounted () {
+    this.$axios.post('/api/query_specimen_suggest')
+      .then(response => (this.suggestSpecimen = response['data']['data']))
+      .catch(function (error) { console.log(error) })
+  },
   methods: {
-    onClickDatasetView () {
-      this.$axios.post('/api/list_flowmetory')
-        .then(response => (this.datasets = response['data']))
+    handleGen (index, row) {
+      this.$axios.post('/api/gen_report', { specimenid: this.tableData[index].specimenid })
+        .then(response => (this.result = response['data']['data']))
         .catch(function (error) { console.log(error) })
     },
-    onClickExperiment (subdir) {
-      let data = {
-        'querysubdir': subdir
-      }
-      this.$axios.post('/api/list_directory_tubor', data)
-        .then(response => (this.selectdataset = response['data']['data']))
-        .catch(function (error) { console.log(error) })
-    },
-    onClickTubor (key, value, index) {
-      let data = {
-        'filename': value,
-        'querysubdir': key
-      }
-
-      this.$axios.post('/api/get_tubor_fig', data)
-        .then(response => (this.figview = response['data']['data']))
-        .catch(function (error) { console.log(error) })
+    handleDownload (index, row) {
     }
   }
 }

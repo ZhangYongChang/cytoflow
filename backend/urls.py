@@ -5,6 +5,7 @@ urlpatterns = [
   # manage specimen object
   url('create_specimen', views.create_specimen, ),
   url('query_specimenid', views.query_specimenid, ),
+  url('query_specimen_suggest', views.query_specimen_suggest, ),
   # manage specimen files
   url('query_specimen_fcsfiles',views.query_specimen_fcsfiles, ),
   url('upload_specimen_fcsfiles', views.upload_specimen_fcsfiles, ),
