@@ -1,0 +1,16 @@
+{
+    "specimenid": 5,
+    "fcsfilename": "002.fcs",
+    "gatetype": 0,
+    "gates": [{
+            "xaxis": "FITC-A",
+            "yaxis": "PE-A",
+            "point": [10, 10]
+        },
+        {
+            "xaxis": "FSC-A",
+            "yaxis": "SSC-A",
+            "point": [20, 20]
+        }
+    ]
+}

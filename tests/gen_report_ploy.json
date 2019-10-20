@@ -1,0 +1,21 @@
+{
+    "specimenid": 5,
+    "fcsfilename": "002.fcs",
+    "gatetype": 1,
+    "gates": {
+        "xaxis": "SSC-A",
+        "yaxis": "PerCP-A",
+        "gate": [
+            [
+                [10, 10],
+                [20, 20],
+                [30, 30]
+            ],
+            [
+                [100, 100],
+                [200, 200],
+                [300, 300]
+            ]
+        ]
+    }
+}
