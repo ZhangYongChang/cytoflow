@@ -29,8 +29,8 @@ def isRayIntersectsSegment(poi, s_poi, e_poi):  # [x,y] [lng,lat]
         return False
     if s_poi[0] < poi[0] and e_poi[1] < poi[1]:
         return False
-    xseg = e_poi[0] - (e_poi[0] - s_poi[0]) * (e_poi[1] -
-                                               poi[1]) / (e_poi[1] - s_poi[1])  # 求交
+    xseg = e_poi[0] - (e_poi[0] - s_poi[0]) * (e_poi[1] - poi[1]) / (
+        e_poi[1] - s_poi[1])  # 求交
     if xseg < poi[0]:
         return False
     return True

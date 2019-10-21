@@ -75,6 +75,14 @@ class SpecimenReport(models.Model):
     specimenreportpath = models.CharField(max_length=256, help_text=u'')
     createtime = models.DateTimeField()
 
+    def to_json(self):
+        return {
+            'sepcimenreportid': self.sepcimenreportid,
+            'specimenid': self.specimenid,
+            'specimenreportpath': self.specimenreportpath,
+            'createtime': self.createtime
+        }
+
 
 class Polygon(object):
     def __init__(self, name, vectexs):

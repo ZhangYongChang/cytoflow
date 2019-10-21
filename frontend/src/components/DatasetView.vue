@@ -57,7 +57,7 @@ export default {
     },
     tobo (newVal, oldVal) {
       console.log(newVal)
-      this.$axios.post('/api/query_specimen_tubo', { 'specimenid': this.specimenid, 'filename': newVal })
+      this.$axios.post('/api/query_specimen_fcsfile_data', { 'specimenid': this.specimenid, 'filename': newVal })
         .then(response => (this.orig_tobo = response['data']['data']))
         .catch(function (error) { console.log(error) })
     },

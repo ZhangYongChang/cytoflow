@@ -76,6 +76,7 @@ TEMPLATES = [
 # Add for vue.js
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "frontend/dist/static"),
+    os.path.join(BASE_DIR, "tmp")
 ]
 
 WSGI_APPLICATION = 'cytoflow.wsgi.application'

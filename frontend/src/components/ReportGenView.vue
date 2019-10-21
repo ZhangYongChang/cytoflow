@@ -33,9 +33,8 @@ export default {
       suggestSpecimen: [],
       tableData: [],
       search: '',
-      figview: {},
-      msg: '',
-      result: ''
+      result: '',
+      openLink: ''
     }
   },
   watch: {
@@ -46,6 +45,9 @@ export default {
       this.tableData = newVal.map(item => {
         return { specimenno: item['specimenno'], specimenid: item['specimenid'] }
       })
+    },
+    openLink (newVal, oldVal) {
+      window.open('/static/' + newVal['filename'], '_blank')
     }
   },
   mounted () {
@@ -60,6 +62,9 @@ export default {
         .catch(function (error) { console.log(error) })
     },
     handleDownload (index, row) {
+      this.$axios.post('/api/query_report', { specimenid: this.tableData[index].specimenid })
+        .then(response => (this.openLink = response['data']['data']))
+        .catch(function (error) { console.log(error) })
     }
   }
 }
