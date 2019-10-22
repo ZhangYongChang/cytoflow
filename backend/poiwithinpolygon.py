@@ -71,5 +71,5 @@ def isPoiWithinPoly(poi, poly, tolerance=0.0001):
             e_poi = epoly[i + 1]
             if isRayIntersectsSegment(poi, s_poi, e_poi):
                 sinsc += 1
-    return sinse % 2 != 0  # 这样更简洁些
+    return sinsc % 2 != 0  # 这样更简洁些
     # return True if sinsc % 2 == 1 else  False
