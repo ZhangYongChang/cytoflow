@@ -15,11 +15,14 @@
         </el-select>
       </el-col>
     </el-row>
+    <el-row>
+      <el-col :span="24">
+        <el-button type="success" icon="el-icon-check" circle @click="onSaveGate"></el-button>
+      </el-col>
+    </el-row>
     <div id="showview">
-      <div>
-        <Experiment v-for="(value, key) in showtubor" :key="key" :item="value" v-on:figSelect="figSelect" v-on:figDel="figDel">
-        </Experiment>
-      </div>
+      <Experiment v-for="(value, key) in showtubor" :key="key" :item="value" v-on:saveGate="saveGate">
+      </Experiment>
     </div>
   </div>
 </template>
@@ -41,7 +44,11 @@ export default {
       tobo: '',
       orig_tobo: [],
       showtubor: {},
-      selectfig: {}
+      crossFlag: false,
+      crossGate: {},
+      polygonFlag: false,
+      polygonGate: {},
+      reslut: {}
     }
   },
   watch: {
@@ -116,13 +123,59 @@ export default {
         .then(response => (this.specimenlist = response['data']['data']))
         .catch(function (error) { console.log(error) })
     },
-    figSelect (data) {
-      this.selectfig[data['viewid']] = data
-      console.log(this.selectfig)
+    onSaveGate () {
+      if (this.crossFlag) {
+        this.$axios.post('api/save_spceiment_fcsfile_gate', this.crossGate)
+          .then(response => (this.reslut = response['data']['data']))
+          .catch(function (error) { console.log(error) })
+      }
+
+      if (this.polygonFlag) {
+        this.$axios.post('api/save_spceiment_fcsfile_gate', this.polygonGate)
+          .then(response => (this.reslut = response['data']['data']))
+          .catch(function (error) { console.log(error) })
+      }
     },
-    figDel (data) {
-      delete this.selectfig.data['viewid']
-      console.log(this.selectfig)
+    saveGate (data) {
+      console.log(data)
+      if (data['gatetype'] === 1) {
+        this.polygonFlag = true
+        var gate = []
+        var polygons = data['gates']['polygonGate']
+        var colors = ['red', 'gred', 'black', 'blue']
+        polygons.forEach((polygon, index) => {
+          gate.push({
+            name: colors[index],
+            data: polygon
+          })
+        })
+        var gates = {
+          xaxis: 'SSC-A',
+          yaxis: 'PerCP-A',
+          gate: gate
+        }
+        this.polygonGate = {
+          specimenid: this.specimenid,
+          fcsfilename: this.tobo,
+          gatetype: 1,
+          gates: gates
+        }
+      } else {
+        if (this.crossFlag === false) {
+          this.crossGate = {
+            specimenid: this.specimenid,
+            fcsfilename: this.tobo,
+            gatetype: 0,
+            gates: []
+          }
+          this.crossFlag = true
+        }
+        this.crossGate['gates'].push({
+          xaxis: data['gates']['xaxis'],
+          yaxis: data['gates']['yaxis'],
+          point: data['gates']['crossGate']
+        })
+      }
     }
   }
 }

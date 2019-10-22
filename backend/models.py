@@ -49,7 +49,7 @@ class SpecimenGate(models.Model):
     specimengateid = models.AutoField(primary_key=True)
     specimenid = models.IntegerField()
     fcsfilename = models.CharField(max_length=256, help_text=u'文件名称')
-    gates = models.CharField(max_length=256, help_text=u'门')
+    gates = models.CharField(max_length=4096, help_text=u'门')
     createtime = models.DateTimeField()
     modifytime = models.DateTimeField()
     gatetype = models.IntegerField()
@@ -93,15 +93,8 @@ class Polygon(object):
         return isPoiWithinPoly(point, self.vectexs)
 
 
-class PolygonEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, Polygon):
-            return {'name': obj.name, 'vectexs': json.dumps(obj.vectexs)}
-        return json.JSONEncoder.default(self, obj)
-
-
 class Gate(object):
-    def __init__(self, xaxis, yaxis, polygons=None):
+    def __init__(self, xaxis=None, yaxis=None, polygons=None):
         self.polygons = polygons
         self.xaxis = xaxis
         self.yaxis = yaxis
@@ -117,23 +110,23 @@ class Gate(object):
         count = 0
         for point in points:
             for polygon in self.polygons:
-                if isPoiWithinPoly(point, polygon.vectexs):
+                if isPoiWithinPoly(point, [polygon.vectexs]):
                     result['detail'][polygon.name].append(point)
                     result['stat'][
                         polygon.name] = result['stat'][polygon.name] + 1
                     count = count + 1
 
+        if count == 0:
+          return result
+
         for item, key in result['stat']:
             result['stat'][key] = float(result['stat'][key]) / float(count)
         return result
 
-
-class GateEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, Gate):
-            return {
-                'xaxis': obj.xaxis,
-                'yaxis': obj.yaxis,
-                'polygons': json.dumps(obj.polygons, cls=PolygonEncoder)
-            }
-        return json.JSONEncoder.default(self, obj)
+    def load(self, json):
+        self.polygons=[]
+        for gate_polygon in json['gate']:
+            polygon = Polygon(gate_polygon['name'], gate_polygon['data'])
+            self.polygons.append(polygon)
+        self.xaxis = json['xaxis']
+        self.yaxis = json['yaxis']

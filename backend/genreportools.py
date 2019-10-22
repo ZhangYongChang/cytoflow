@@ -1,14 +1,16 @@
+from backend.reporttemplate import REPORT_TEMPLATE
+from backend.models import Gate
+from jinja2 import Template
+import matplotlib.pyplot as plt
+import backend.errormgr as em
+import matplotlib
+import numpy
 import os
 import json
 import uuid
 import pdfkit
 import logging
 import fcsparser
-from jinja2 import Template
-from backend.reporttemplate import REPORT_TEMPLATE
-import matplotlib.pyplot as plt
-import backend.errormgr as em
-import matplotlib
 import io
 import base64
 
@@ -61,12 +63,11 @@ class DrawHelp(object):
         j = self.count % self.col
         draw_ax = self.ax[i][j]
         if gate['xaxis'] == 'FSC-A' and gate['yaxis'] == 'SSC-A':
-            draw_ax.scatter(
-                df['FSC-A'] / 1000,
-                df['SSC-A'] / 1000,
-                s=2,
-                c=self.color,
-                alpha=0.5)
+            x = df['FSC-A'] / 1000
+            y = df['SSC-A'] / 1000
+            draw_ax.scatter(x, y, s=2, c=self.color, alpha=0.5)
+            draw_ax.hlines(gate['point'][1] / 1000, 0, 250, color="black")
+            draw_ax.vlines(gate['point'][0] / 1000, 0, 250, color="black")
             axis_prop(draw_ax, 'linear', 'linear', "", "FSC-A", "SSC-A")
         if gate['xaxis'] == 'FITC-A' and gate['yaxis'] == 'PE-A':
             draw_ax.scatter(
@@ -74,48 +75,70 @@ class DrawHelp(object):
             axis_prop(draw_ax, "log", "log", "", "FITC-A", "PE-A")
             draw_ax.set_xlim(10**1, 10**5)
             draw_ax.set_ylim(10**1, 10**5)
+            draw_ax.hlines(gate['point'][1], 10**1, 10**5, color="black")
+            draw_ax.vlines(gate['point'][0], 10**1, 10**5, color="black")
         if gate['xaxis'] == 'FITC-A' and gate['yaxis'] == 'PE-Cy7-A':
             draw_ax.scatter(
                 df['FITC-A'], df['PE-Cy7-A'], s=2, c=self.color, alpha=0.5)
             axis_prop(draw_ax, "log", "log", "", "FITC-A", "PE-Cy7-A")
             draw_ax.set_xlim(10**1, 10**5)
             draw_ax.set_ylim(10**1, 10**5)
+            draw_ax.hlines(gate['point'][1], 10**1, 10**5, color="black")
+            draw_ax.vlines(gate['point'][0], 10**1, 10**5, color="black")
         if gate['xaxis'] == 'APC-A' and gate['yaxis'] == 'APC-Cy7-A':
             draw_ax.scatter(
                 df['APC-A'], df['APC-Cy7-A'], s=2, c=self.color, alpha=0.5)
             axis_prop(draw_ax, "log", "log", "", "APC-A", "APC-Cy7-A")
             draw_ax.set_xlim(10**1, 10**5)
             draw_ax.set_ylim(10**1, 10**5)
+            draw_ax.hlines(gate['point'][1], 10**1, 10**5, color="black")
+            draw_ax.vlines(gate['point'][0], 10**1, 10**5, color="black")
         if gate['xaxis'] == 'FITC-A' and gate['yaxis'] == 'APC-A':
             draw_ax.scatter(
                 df['FITC-A'], df['APC-A'], s=2, c=self.color, alpha=0.5)
             axis_prop(draw_ax, "log", "log", "", "FITC-A", "APC-A")
             draw_ax.set_xlim(10**1, 10**5)
             draw_ax.set_ylim(10**1, 10**5)
+            draw_ax.hlines(gate['point'][1], 10**1, 10**5, color="black")
+            draw_ax.vlines(gate['point'][0], 10**1, 10**5, color="black")
         if gate['xaxis'] == 'PE-Cy7-A' and gate['yaxis'] == 'APC-Cy7-A':
             draw_ax.scatter(
                 df['PE-Cy7-A'], df['APC-Cy7-A'], s=2, c=self.color, alpha=0.5)
             axis_prop(draw_ax, "log", "log", "", "PE-Cy7-A", "APC-Cy7-A")
             draw_ax.set_xlim(10**1, 10**5)
             draw_ax.set_ylim(10**1, 10**5)
+            draw_ax.hlines(gate['point'][1], 10**1, 10**5, color="black")
+            draw_ax.vlines(gate['point'][0], 10**1, 10**5, color="black")
         if gate['xaxis'] == 'PE-A' and gate['yaxis'] == 'PE-Cy7-A':
             draw_ax.scatter(
                 df['PE-A'], df['PE-Cy7-A'], s=2, c=self.color, alpha=0.5)
             axis_prop(draw_ax, "log", "log", "", "PE-A", "PE-Cy7-A")
             draw_ax.set_xlim(10**1, 10**5)
             draw_ax.set_ylim(10**1, 10**5)
+            draw_ax.hlines(gate['point'][1], 10**1, 10**5, color="black")
+            draw_ax.vlines(gate['point'][0], 10**1, 10**5, color="black")
         self.count = self.count + 1
 
-    def draw_vetx_gate(self, filename, gate, df):
+    def draw_vetx_gate(self, filename, vetx_gate, df):
         i = int(self.count / self.col)
         j = self.count % self.col
         draw_ax = self.ax[i][j]
-        draw_ax.scatter(
-            df['SSC-A'] / 1000, df['PerCP-A'], s=2, c=self.color, alpha=0.5)
+        x = df['SSC-A'] / 1000
+        y = df['PerCP-A']
+        draw_ax.scatter(x, y, s=2, c=self.color, alpha=0.5)
         axis_prop(draw_ax, "linear", "log", "", "SSC-A", "PerCP-A")
+        draw_ax.set_xlim(0, 250)
+        draw_ax.set_ylim(10**1, 10**5)
         self.count = self.count + 1
+        gate = Gate()
+        gate.load(vetx_gate)
+        x = x.values.reshape(x.values.size, 1)
+        y = y.values.reshape(y.values.size, 1)
+        points = numpy.concatenate((x, y), axis=1)
+        return gate.stat(points)
 
     def draw(self, fulldir, specimengates):
+        result = None
         for specimengate in specimengates:
             filename = specimengate.fcsfilename
             filepath = os.path.join(fulldir, filename)
@@ -136,9 +159,9 @@ class DrawHelp(object):
             if vetx_gate is not None:
                 if self.count >= self.row * self.col:
                     self.new_plot()
-                self.draw_vetx_gate(filename, vetx_gate, df)
+                result = self.draw_vetx_gate(filename, vetx_gate, df)
         self.copy_last_plot()
-        return self.imgs
+        return self.imgs, result
 
 
 def render_report(datasetdir, specimen, specimengates):
@@ -148,7 +171,7 @@ def render_report(datasetdir, specimen, specimengates):
         os.mkdir(REPORT_TEMP_DIR)
 
     drawer = DrawHelp(3, 3)
-    imgs = drawer.draw(fulldir, specimengates)
+    imgs, result = drawer.draw(fulldir, specimengates)
     fileuuid = str(uuid.uuid4())
     logger.info("starting gen file " + fileuuid + ".pdf")
     htmlfilepath = os.path.join(REPORT_TEMP_DIR, fileuuid + ".html")
