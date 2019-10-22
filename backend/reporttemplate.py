@@ -794,7 +794,7 @@ REPORT_TEMPLATE = '''
       <td class="s7b0a07d2" colspan="26" style="max-height:29px;height:29px;width:467px;max-width:467px;">
         淋巴细胞(绿色)Lymphocytes(Green)</td>
       <td class="s7b0a07d2" colspan="6" style="height:29px;width:90px;">
-        {{specimen.green}}
+        {{stat.gred}}
       </td>
       <td class="se62e4896" style="height:30px;width:8px;"></td>
       <td class="sc8e3ace7" colspan="5" style="height:30px;width:60px;"></td>
@@ -809,7 +809,7 @@ REPORT_TEMPLATE = '''
       <td class="s7b0a07d2" colspan="26" style="max-height:30px;height:30px;width:467px;max-width:467px;">
         前体B淋巴细胞(黄色)Precursor B Lymphocytes(Yellow)</td>
       <td class="s7b0a07d2" colspan="6" style="height:30px;width:90px;">
-        {{specimen.yellow}}
+        {{stat.blue}}
       </td>
       <td class="se62e4896" style="height:31px;width:8px;"></td>
       <td class="sc8e3ace7" colspan="5" style="height:31px;width:60px;"></td>
@@ -824,7 +824,7 @@ REPORT_TEMPLATE = '''
       <td class="s7b0a07d2" colspan="26" style="max-height:29px;height:29px;width:467px;max-width:467px;">
         异常细胞群(红色)Abnormal cells(Red)</td>
       <td class="s7b0a07d2" colspan="6" style="height:29px;width:90px;">
-        {{specimen.red}}
+        {{stat.red}}
       </td>
       <td class="se62e4896" style="height:30px;width:8px;"></td>
       <td class="sc8e3ace7" colspan="5" style="height:30px;width:60px;"></td>
@@ -839,7 +839,7 @@ REPORT_TEMPLATE = '''
       <td class="s7b0a07d2" colspan="26" style="max-height:29px;height:29px;width:467px;max-width:467px;">
         有核红区域细胞(紫色)Nucleated erythrocytes region(Purple)</td>
       <td class="s7b0a07d2" colspan="6" style="height:29px;width:90px;">
-        {{specimen.purple}}
+        {{stat.black}}
       </td>
       <td class="se62e4896" style="height:30px;width:8px;"></td>
       <td class="sc8e3ace7" colspan="5" style="height:30px;width:60px;"></td>
@@ -965,7 +965,7 @@ REPORT_TEMPLATE = '''
         <p style="margin:0px;text-align:center;">&nbsp;&nbsp;&nbsp;&nbsp;</p>
       </td>
       <td class="s0dd5de56" colspan="40" style="max-height:108px;height:108px;width:665px;max-width:665px;">
-        <br>印象：在CD45/SSC点图上设门分析，原始向髓系延伸的分布区域可见异常细胞群体，约占有核细胞的{{specimen.red}}，主要表达HLA-DR、CD4、CD15、CD33、CD38、CD56、CD58、CD123。<br><br><br>提示：异常髓系增殖，AML可能。请结合临床及其他相关检查结果综合判断。<br>
+        <br>印象：在CD45/SSC点图上设门分析，原始向髓系延伸的分布区域可见异常细胞群体，约占有核细胞的{{stat.black}}，主要表达HLA-DR、CD4、CD15、CD33、CD38、CD56、CD58、CD123。<br><br><br>提示：异常髓系增殖，AML可能。请结合临床及其他相关检查结果综合判断。<br>
       </td>
       <td class="s749bc175" style="height:108px;width:4px;"></td>
       <td class="se62e4896" style="height:108px;width:8px;"></td>

@@ -1,5 +1,7 @@
 from django.db import models
 from backend.poiwithinpolygon import isPoiWithinPoly
+import matplotlib.path as mplPath
+import numpy as np
 import json
 
 # Create your models here.
@@ -88,9 +90,10 @@ class Polygon(object):
     def __init__(self, name, vectexs):
         self.vectexs = vectexs
         self.name = name
+        self.path = mplPath.Path(self.vectexs)
 
     def isPoiWithinPolyon(self, point):
-        return isPoiWithinPoly(point, self.vectexs)
+        return self.path.contains_point(point)
 
 
 class Gate(object):
@@ -110,16 +113,16 @@ class Gate(object):
         count = 0
         for point in points:
             for polygon in self.polygons:
-                if isPoiWithinPoly(point, [polygon.vectexs]):
-                    result['detail'][polygon.name].append(point)
-                    result['stat'][
-                        polygon.name] = result['stat'][polygon.name] + 1
+                if polygon.isPoiWithinPolyon(point):
+                    #result['detail'][polygon.name].append(point)
+                    result['stat'][polygon.name] = result['stat'][polygon.name] + 1
                     count = count + 1
+                    break
 
         if count == 0:
           return result
 
-        for item, key in result['stat']:
+        for key, item in result['stat'].items():
             result['stat'][key] = float(result['stat'][key]) / float(count)
         return result
 

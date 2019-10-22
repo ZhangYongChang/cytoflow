@@ -184,6 +184,8 @@ def gen_report(request):
         specimengates = SpecimenGate.objects.filter(specimenid=specimenid)
         filename = render_report(DATASET_ROOTDIR, specimen, specimengates)
         createtime = datetime.datetime.now()
+        hisreport = SpecimenReport.objects.get(specimenid=specimenid)
+        hisreport.delete()
         report = SpecimenReport(
             specimenid=specimenid,
             specimenreportpath=filename,

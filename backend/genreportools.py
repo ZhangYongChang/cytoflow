@@ -123,6 +123,7 @@ class DrawHelp(object):
         i = int(self.count / self.col)
         j = self.count % self.col
         draw_ax = self.ax[i][j]
+        actual_x = df['SSC-A']
         x = df['SSC-A'] / 1000
         y = df['PerCP-A']
         draw_ax.scatter(x, y, s=2, c=self.color, alpha=0.5)
@@ -132,9 +133,9 @@ class DrawHelp(object):
         self.count = self.count + 1
         gate = Gate()
         gate.load(vetx_gate)
-        x = x.values.reshape(x.values.size, 1)
+        actual_x = actual_x.values.reshape(x.values.size, 1)
         y = y.values.reshape(y.values.size, 1)
-        points = numpy.concatenate((x, y), axis=1)
+        points = numpy.concatenate((actual_x, y), axis=1)
         return gate.stat(points)
 
     def draw(self, fulldir, specimengates):
@@ -176,7 +177,13 @@ def render_report(datasetdir, specimen, specimengates):
     logger.info("starting gen file " + fileuuid + ".pdf")
     htmlfilepath = os.path.join(REPORT_TEMP_DIR, fileuuid + ".html")
     pdfreportpath = os.path.join(REPORT_TEMP_DIR, fileuuid + ".pdf")
-    html = template.render(specimen=specimen.to_json(), imgs=imgs)
+    stat = {
+        'red': str(round(result['stat']['red'] * 100)) + '%',
+        'gred': str(round(result['stat']['gred'] * 100)) + '%',
+        'blue': str(round(result['stat']['blue'] * 100)) + '%',
+        'black': str(round(result['stat']['black'] * 100)) + '%'
+    }
+    html = template.render(specimen=specimen.to_json(), imgs=imgs, stat=stat)
     file = open(htmlfilepath, 'w+')
     file.write(html)
     file.close()
