@@ -85,7 +85,7 @@ REPORT_TEMPLATE = '''
       overflow: hidden;
     }
 
-    .sa6be309e {
+    .pdfCellFont {
       Font: 11pt 宋体;
       border: 0px;
       border-top-color: #000000;
@@ -94,6 +94,25 @@ REPORT_TEMPLATE = '''
       border-left-color: #000000;
       border-left-style: solid;
       border-left-width: 1px;
+      border-bottom-color: #000000;
+      border-bottom-style: solid;
+      border-bottom-width: 1px;
+      text-align: left;
+      vertical-align: middle;
+      line-height: 1.15em;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+
+    .sb60498d5 {
+      Font: 11pt 宋体;
+      border: 0px;
+      border-top-color: #000000;
+      border-top-style: solid;
+      border-top-width: 1px;
+      border-right-color: #000000;
+      border-right-style: solid;
+      border-right-width: 1px;
       border-bottom-color: #000000;
       border-bottom-style: solid;
       border-bottom-width: 1px;
@@ -123,24 +142,7 @@ REPORT_TEMPLATE = '''
       overflow: hidden;
     }
 
-    .sb60498d5 {
-      Font: 11pt 宋体;
-      border: 0px;
-      border-top-color: #000000;
-      border-top-style: solid;
-      border-top-width: 1px;
-      border-right-color: #000000;
-      border-right-style: solid;
-      border-right-width: 1px;
-      border-bottom-color: #000000;
-      border-bottom-style: solid;
-      border-bottom-width: 1px;
-      text-align: left;
-      vertical-align: middle;
-      line-height: 1.15em;
-      white-space: nowrap;
-      overflow: hidden;
-    }
+    
 
     .se62e4896 {
       Font: 8pt Arial;
@@ -586,29 +588,29 @@ REPORT_TEMPLATE = '''
     <tr style="height:32px;">
       <td style="border:0px;height:32px;width:8px;"></td>
       <td class="s7afdc30c" style="height:32px;width:7px;"></td>
-      <td class="sa6be309e" colspan="6" style="max-height:31px;height:31px;width:90px;max-width:90px;">
+      <td class="pdfCellFont" colspan="6" style="max-height:31px;height:31px;width:90px;max-width:90px;">
         &nbsp;姓名(Name)：
       </td>
-      <td class="s071be6ee" colspan="8" style="height:31px;width:112px;">
-        {{specimen.name}}
+      <td class="pdfCellFont" colspan="8" style="height:31px;width:112px;">
+        &nbsp;{{specimen.name}}
       </td>
-      <td class="sa6be309e" colspan="5" style="max-height:31px;height:31px;width:82px;max-width:82px;">
+      <td class="pdfCellFont" colspan="5" style="max-height:31px;height:31px;width:82px;max-width:82px;">
         &nbsp;性别(Sex)：
       </td>
-      <td class="sb60498d5" colspan="3" style="height:31px;width:52px;">
-        {{specimen.sex}}
+      <td class="pdfCellFont" colspan="3" style="height:31px;width:52px;">
+        &nbsp;{{specimen.sex}}
       </td>
-      <td class="sa6be309e" colspan="3" style="max-height:31px;height:31px;width:82px;max-width:82px;">
+      <td class="pdfCellFont" colspan="3" style="max-height:31px;height:31px;width:82px;max-width:82px;">
         &nbsp;年龄(Age)：
       </td>
-      <td class="sb60498d5" colspan="4" style="height:31px;width:60px;">
-        {{specimen.age}}岁
+      <td class="pdfCellFont" colspan="4" style="height:31px;width:60px;">
+        &nbsp;{{specimen.age}}岁
       </td>
-      <td class="sa6be309e" colspan="7" style="max-height:31px;height:31px;width:105px;max-width:105px;">
+      <td class="pdfCellFont" colspan="7" style="max-height:31px;height:31px;width:105px;max-width:105px;">
         &nbsp;标本编号(No.)：
       </td>
-      <td class="sb60498d5" colspan="7" style="max-height:31px;height:31px;width:97px;max-width:97px;">
-        {{specimen.specimenno}}
+      <td class="pdfCellFont" colspan="7" style="max-height:31px;height:31px;width:97px;max-width:97px;">
+        &nbsp;{{specimen.specimenno}}
       </td>
       <td class="se62e4896" style="height:32px;width:8px;"></td>
       <td style="border:0px;height:32px;width:7px;"></td>
@@ -616,17 +618,17 @@ REPORT_TEMPLATE = '''
     <tr style="height:30px;">
       <td style="border:0px;height:30px;width:8px;"></td>
       <td class="s7afdc30c" style="height:30px;width:7px;"></td>
-      <td class="sa6be309e" colspan="10" rowspan="2" style="max-height:31px;height:31px;width:143px;max-width:143px;">
+      <td class="pdfCellFont" colspan="10" rowspan="2" style="max-height:31px;height:31px;width:143px;max-width:143px;">
         &nbsp;送检医院(Hospital)：
       </td>
       <td class="s071be6ee" colspan="12" rowspan="2" style="max-height:31px;height:31px;width:195px;max-width:195px;">
-        {{specimen.hospital}}
+        &nbsp;{{specimen.hospital}}
       </td>
-      <td class="sa6be309e" colspan="6" rowspan="2" style="max-height:31px;height:31px;width:135px;max-width:135px;">
+      <td class="pdfCellFont" colspan="6" rowspan="2" style="max-height:31px;height:31px;width:135px;max-width:135px;">
         &nbsp;科室(Department)：
       </td>
       <td class="s071be6ee" colspan="15" rowspan="2" style="height:31px;width:211px;">
-        {{specimen.department}}
+        &nbsp;{{specimen.department}}
       </td>
       <td class="se62e4896" style="height:30px;width:8px;"></td>
       <td style="border:0px;height:30px;width:7px;"></td>
@@ -640,13 +642,13 @@ REPORT_TEMPLATE = '''
     <tr style="height:30px;">
       <td style="border:0px;height:30px;width:8px;"></td>
       <td class="s7afdc30c" style="height:30px;width:7px;"></td>
-      <td class="sa6be309e" colspan="8" style="max-height:29px;height:29px;width:113px;max-width:113px;">
+      <td class="pdfCellFont" colspan="8" style="max-height:29px;height:29px;width:113px;max-width:113px;">
         &nbsp;床号(Bed No.)：
       </td>
       <td class="sb60498d5" colspan="14" style="height:29px;width:225px;">
         {{specimen.bedno}}
       </td>
-      <td class="sa6be309e" colspan="4" style="max-height:29px;height:29px;width:120px;max-width:120px;">
+      <td class="pdfCellFont" colspan="4" style="max-height:29px;height:29px;width:120px;max-width:120px;">
         &nbsp;送检医生(Dr.)：
       </td>
       <td class="sb60498d5" colspan="17" style="height:29px;width:226px;">
@@ -658,13 +660,13 @@ REPORT_TEMPLATE = '''
     <tr style="height:2px;">
       <td style="border:0px;height:2px;width:8px;"></td>
       <td class="s7afdc30c" style="height:2px;width:7px;"></td>
-      <td class="sa6be309e" colspan="11" rowspan="2" style="max-height:24px;height:24px;width:150px;max-width:150px;">
+      <td class="pdfCellFont" colspan="11" rowspan="2" style="max-height:24px;height:24px;width:150px;max-width:150px;">
         &nbsp;标本类型(Specimen)：
       </td>
       <td class="sb60498d5" colspan="11" rowspan="2" style="height:24px;width:188px;">
         {{specimen.specimentype}}
       </td>
-      <td class="sa6be309e" colspan="10" rowspan="2" style="max-height:24px;height:24px;width:211px;max-width:211px;">
+      <td class="pdfCellFont" colspan="10" rowspan="2" style="max-height:24px;height:24px;width:211px;max-width:211px;">
         &nbsp;病历号(Medical Record No.)：
       </td>
       <td class="s071be6ee" colspan="11" rowspan="2" style="max-height:24px;height:24px;width:135px;max-width:135px;">
@@ -682,13 +684,13 @@ REPORT_TEMPLATE = '''
     <tr style="height:24px;">
       <td style="border:0px;height:24px;width:8px;"></td>
       <td class="s7afdc30c" style="height:24px;width:7px;"></td>
-      <td class="sa6be309e" colspan="17" style="max-height:23px;height:23px;width:241px;max-width:241px;">
+      <td class="pdfCellFont" colspan="17" style="max-height:23px;height:23px;width:241px;max-width:241px;">
         &nbsp;采集时间(Specimen Sampling Time)：
       </td>
       <td class="sb60498d5" colspan="5" style="max-height:23px;height:23px;width:97px;max-width:97px;">
         {{specimen.collecttime}}
       </td>
-      <td class="sa6be309e" colspan="13" style="max-height:23px;height:23px;width:241px;max-width:241px;">
+      <td class="pdfCellFont" colspan="13" style="max-height:23px;height:23px;width:241px;max-width:241px;">
         &nbsp;接收时间(Specimen Receive Time)：
       </td>
       <td class="sb60498d5" colspan="8" style="max-height:23px;height:23px;width:105px;max-width:105px;">
@@ -700,7 +702,7 @@ REPORT_TEMPLATE = '''
     <tr style="height:23px;">
       <td style="border:0px;height:23px;width:8px;"></td>
       <td class="s7afdc30c" style="height:23px;width:7px;"></td>
-      <td class="sa6be309e" colspan="12" style="max-height:22px;height:22px;width:158px;max-width:158px;">
+      <td class="pdfCellFont" colspan="12" style="max-height:22px;height:22px;width:158px;max-width:158px;">
         &nbsp;临床诊断(Diagnosis)：
       </td>
       <td class="sb60498d5" colspan="31" style="height:22px;width:528px;"></td>
@@ -767,7 +769,8 @@ REPORT_TEMPLATE = '''
       <td style="border:0px;height:22px;width:8px;"></td>
       <td class="s7afdc30c" style="height:22px;width:7px;"></td>
       <td class="s3d6c5dc2" colspan="43"
-        style="max-height:22px;height:22px;white-space:pre-wrap;max-width:688px;width:688px;"> 获取和分析细胞数(Total Events)：20000 CD45/SSC 设门 (CD45/SSC Gates)</td>
+        style="max-height:22px;height:22px;white-space:pre-wrap;max-width:688px;width:688px;"> 获取和分析细胞数(Total Events)：
+        20000 CD45/SSC 设门 (CD45/SSC Gates)</td>
       <td class="se62e4896" style="height:22px;width:8px;"></td>
       <td style="border:0px;height:22px;width:7px;"></td>
     </tr>
@@ -794,7 +797,7 @@ REPORT_TEMPLATE = '''
       <td class="s7b0a07d2" colspan="26" style="max-height:29px;height:29px;width:467px;max-width:467px;">
         淋巴细胞(绿色)Lymphocytes(Green)</td>
       <td class="s7b0a07d2" colspan="6" style="height:29px;width:90px;">
-        {{stat.gred}}
+        {{stat.green}}
       </td>
       <td class="se62e4896" style="height:30px;width:8px;"></td>
       <td class="sc8e3ace7" colspan="5" style="height:30px;width:60px;"></td>
@@ -809,7 +812,7 @@ REPORT_TEMPLATE = '''
       <td class="s7b0a07d2" colspan="26" style="max-height:30px;height:30px;width:467px;max-width:467px;">
         前体B淋巴细胞(黄色)Precursor B Lymphocytes(Yellow)</td>
       <td class="s7b0a07d2" colspan="6" style="height:30px;width:90px;">
-        {{stat.blue}}
+        {{stat.yellow}}
       </td>
       <td class="se62e4896" style="height:31px;width:8px;"></td>
       <td class="sc8e3ace7" colspan="5" style="height:31px;width:60px;"></td>
@@ -839,7 +842,7 @@ REPORT_TEMPLATE = '''
       <td class="s7b0a07d2" colspan="26" style="max-height:29px;height:29px;width:467px;max-width:467px;">
         有核红区域细胞(紫色)Nucleated erythrocytes region(Purple)</td>
       <td class="s7b0a07d2" colspan="6" style="height:29px;width:90px;">
-        {{stat.black}}
+        {{stat.purple}}
       </td>
       <td class="se62e4896" style="height:30px;width:8px;"></td>
       <td class="sc8e3ace7" colspan="5" style="height:30px;width:60px;"></td>
@@ -965,7 +968,7 @@ REPORT_TEMPLATE = '''
         <p style="margin:0px;text-align:center;">&nbsp;&nbsp;&nbsp;&nbsp;</p>
       </td>
       <td class="s0dd5de56" colspan="40" style="max-height:108px;height:108px;width:665px;max-width:665px;">
-        <br>印象：在CD45/SSC点图上设门分析，原始向髓系延伸的分布区域可见异常细胞群体，约占有核细胞的{{stat.black}}，主要表达HLA-DR、CD4、CD15、CD33、CD38、CD56、CD58、CD123。<br><br><br>提示：异常髓系增殖，AML可能。请结合临床及其他相关检查结果综合判断。<br>
+        <br>印象：在CD45/SSC点图上设门分析，原始向髓系延伸的分布区域可见异常细胞群体，约占有核细胞的{{stat.red}}，主要表达HLA-DR、CD4、CD15、CD33、CD38、CD56、CD58、CD123。<br><br><br>提示：异常髓系增殖，AML可能。请结合临床及其他相关检查结果综合判断。<br>
       </td>
       <td class="s749bc175" style="height:108px;width:4px;"></td>
       <td class="se62e4896" style="height:108px;width:8px;"></td>

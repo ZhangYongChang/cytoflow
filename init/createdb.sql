@@ -26,7 +26,7 @@ CREATE TABLE `specimengate` (
   `specimengateid` int(11) NOT NULL AUTO_INCREMENT,
   `specimenid` int(11) NOT NULL,
   `fcsfilename` varchar(256) DEFAULT NULL,
-  `gates` varchar(256) DEFAULT NULL,
+  `gates` varchar(4096) DEFAULT NULL,
   `gatetype` int(11) NOT NULL,
   `createtime` datetime DEFAULT NULL,
   `modifytime` datetime DEFAULT NULL,

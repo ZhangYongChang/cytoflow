@@ -7,14 +7,14 @@
             <el-form-item label="姓名">
               <el-input v-model="form.name"></el-input>
             </el-form-item>
+            <el-form-item label="年龄">
+              <el-input v-model="form.age"></el-input>
+            </el-form-item>
             <el-form-item label="性别">
-              <el-select v-model="form.sex" placeholder="请选择性别">
+              <el-select v-model="form.sex" placeholder="请选择性别" style="width:100px">
                 <el-option label="男" value="Men"></el-option>
                 <el-option label="女" value="Male"></el-option>
               </el-select>
-            </el-form-item>
-            <el-form-item label="年龄">
-              <el-input v-model="form.age"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
@@ -91,12 +91,28 @@ export default {
   methods: {
     onCommit () {
       this.$axios.post('/api/create_specimen', this.form)
-        .then(response => (this.result = response['data']))
-        .catch(function (error) { console.log(error) })
+        .then(response => {
+          if (response['data']['error_num'] !== 0) {
+            this.$notify.error({ title: '错误', message: response['data']['msg'] })
+          } else {
+            this.$notify({ title: '成功', message: '保存标本信息成功', type: 'success' })
+            this.result = response['data']['data']
+          }
+        })
+        .catch(error => {
+          this.$notify.error({ title: '错误', message: error })
+        })
     }
   }
 }
 </script>
 
 <style scoped>
+.el-form-item {
+  margin-bottom: 20px;
+  padding: 10px 0;
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
 </style>

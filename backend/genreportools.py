@@ -178,10 +178,10 @@ def render_report(datasetdir, specimen, specimengates):
     htmlfilepath = os.path.join(REPORT_TEMP_DIR, fileuuid + ".html")
     pdfreportpath = os.path.join(REPORT_TEMP_DIR, fileuuid + ".pdf")
     stat = {
+        'green': str(round(result['stat']['green'] * 100)) + '%',
+        'yellow': str(round(result['stat']['yellow'] * 100)) + '%',
         'red': str(round(result['stat']['red'] * 100)) + '%',
-        'gred': str(round(result['stat']['gred'] * 100)) + '%',
-        'blue': str(round(result['stat']['blue'] * 100)) + '%',
-        'black': str(round(result['stat']['black'] * 100)) + '%'
+        'purple': str(round(result['stat']['purple'] * 100)) + '%'
     }
     html = template.render(specimen=specimen.to_json(), imgs=imgs, stat=stat)
     file = open(htmlfilepath, 'w+')

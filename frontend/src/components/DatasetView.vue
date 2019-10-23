@@ -1,23 +1,19 @@
 <template>
   <div id="datasetview">
     <el-row>
-      <el-col :span="24">
+      <el-col :span="5">
         <el-select size="medium" v-model="specimenid" filterable remote reserve-keyword placeholder="请输入标本号" :remote-method="specimenSearch">
           <el-option v-for="item in specimenoptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
         </el-select>
       </el-col>
-    </el-row>
-    <el-row>
-      <el-col :span="24">
+      <el-col :span="5">
         <el-select v-model="tobo" placeholder="请选择试管">
           <el-option v-for="item in tobooptions" :key="item.value" :label="item.label" :value="item.value">
           </el-option>
         </el-select>
       </el-col>
-    </el-row>
-    <el-row>
-      <el-col :span="24">
-        <el-button type="success" icon="el-icon-check" circle @click="onSaveGate"></el-button>
+      <el-col :span="5">
+        <el-button type="primary" @click="onSaveGate">提交</el-button>
       </el-col>
     </el-row>
     <div id="showview">
@@ -54,8 +50,15 @@ export default {
   watch: {
     specimenid (newVal, oldVal) {
       this.$axios.post('/api/query_specimen_fcsfiles', { 'specimenid': newVal })
-        .then(response => (this.tobolist = response['data']['data']['fcsfilenames']))
-        .catch(function (error) { console.log(error) })
+        .then(response => {
+          if (response['data']['error_num'] !== 0) {
+            this.$notify.error({ title: '错误', message: response['data']['msg'] })
+          }
+          this.tobolist = response['data']['data']['fcsfilenames']
+        })
+        .catch(error => {
+          this.$notify.error({ title: '错误', message: error })
+        })
     },
     tobolist (newVal, oldVal) {
       this.tobooptions = this.tobolist.map(item => {
@@ -63,10 +66,16 @@ export default {
       })
     },
     tobo (newVal, oldVal) {
-      console.log(newVal)
       this.$axios.post('/api/query_specimen_fcsfile_data', { 'specimenid': this.specimenid, 'filename': newVal })
-        .then(response => (this.orig_tobo = response['data']['data']))
-        .catch(function (error) { console.log(error) })
+        .then(response => {
+          if (response['data']['error_num'] !== 0) {
+            this.$notify.error({ title: '错误', message: response['data']['msg'] })
+          }
+          this.orig_tobo = response['data']['data']
+        })
+        .catch(error => {
+          this.$notify.error({ title: '错误', message: error })
+        })
     },
     orig_tobo (newVal, oldVal) {
       let showGroup = [
@@ -79,29 +88,14 @@ export default {
         ['PE-Cy7-A', 'APC-Cy7-A', 'loglog'],
         ['PE-A', 'PE-Cy7-A', 'loglog']
       ]
-
-      function getAxisData (tmptubor, xaxis, yaxis) {
-        var result = []
-        var xarray = tmptubor[xaxis]
-        var yarray = tmptubor[yaxis]
-        for (let index = 0; index < xarray.length; index++) {
-          result.push([xarray[index], yarray[index]])
-        }
-        return result
-      }
-
-      function getKey (tmptubor, xaxis, yaxis) {
-        return tmptubor['specimenid'] + '/' + tmptubor['filename'] + '(' + xaxis + ',' + yaxis + ')'
-      }
-
       this.showtubor = {}
       for (var j = 0, len = showGroup.length; j < len; j++) {
         let groupitem = showGroup[j]
         var xaxis = groupitem[0]
         var yaxis = groupitem[1]
         let type = groupitem[2]
-        let data = getAxisData(this.orig_tobo, xaxis, yaxis)
-        let key = getKey(this.orig_tobo, xaxis, yaxis)
+        let data = this.getAxisData(this.orig_tobo, xaxis, yaxis)
+        let key = this.getKey(this.orig_tobo, xaxis, yaxis)
         this.showtubor[key] = {
           'key': key,
           'xaxis': xaxis,
@@ -118,31 +112,67 @@ export default {
     }
   },
   methods: {
-    specimenSearch (queryString) {
-      this.$axios.post('/api/query_specimenid', { 'specimenno': queryString })
-        .then(response => (this.specimenlist = response['data']['data']))
-        .catch(function (error) { console.log(error) })
+    getKey: function (tmptubor, xaxis, yaxis) {
+      return tmptubor['specimenid'] + '/' + tmptubor['filename'] + '(' + xaxis + ',' + yaxis + ')'
     },
-    onSaveGate () {
+    getAxisData: function (tmptubor, xaxis, yaxis) {
+      var result = []
+      var xarray = tmptubor[xaxis]
+      var yarray = tmptubor[yaxis]
+      for (let index = 0; index < xarray.length; index++) {
+        result.push([xarray[index], yarray[index]])
+      }
+      return result
+    },
+    specimenSearch: function (queryString) {
+      this.$axios.post('/api/query_specimenid', { 'specimenno': queryString })
+        .then(response => {
+          if (response['data']['error_num'] !== 0) {
+            this.$notify.error({ title: '错误', message: response['data']['msg'] })
+          }
+          this.specimenlist = response['data']['data']
+        })
+        .catch(error => {
+          this.$notify.error({ title: '错误', message: error })
+        })
+    },
+    onSaveGate: function () {
       if (this.crossFlag) {
         this.$axios.post('api/save_spceiment_fcsfile_gate', this.crossGate)
-          .then(response => (this.reslut = response['data']['data']))
-          .catch(function (error) { console.log(error) })
+          .then(response => {
+            if (response['data']['error_num'] !== 0) {
+              this.$notify.error({ title: '错误', message: response['data']['msg'] })
+            } else {
+              this.$notify({ title: '成功', message: '保存十字门成功', type: 'success' })
+              this.reslut = response['data']['data']
+            }
+          })
+          .catch(error => {
+            this.$notify.error({ title: '错误', message: error })
+          })
       }
 
       if (this.polygonFlag) {
         this.$axios.post('api/save_spceiment_fcsfile_gate', this.polygonGate)
-          .then(response => (this.reslut = response['data']['data']))
-          .catch(function (error) { console.log(error) })
+          .then(response => {
+            if (response['data']['error_num'] !== 0) {
+              this.$notify.error({ title: '错误', message: response['data']['msg'] })
+            } else {
+              this.$notify({ title: '成功', message: '保存多边形门成功', type: 'success' })
+              this.reslut = response['data']['data']
+            }
+          })
+          .catch(error => {
+            this.$notify.error({ title: '错误', message: error })
+          })
       }
     },
-    saveGate (data) {
-      console.log(data)
+    saveGate: function (data) {
       if (data['gatetype'] === 1) {
         this.polygonFlag = true
         var gate = []
         var polygons = data['gates']['polygonGate']
-        var colors = ['red', 'gred', 'black', 'blue']
+        var colors = ['green', 'yellow', 'red', 'purple']
         polygons.forEach((polygon, index) => {
           gate.push({
             name: colors[index],

@@ -1,17 +1,21 @@
 <template>
   <div>
     <el-container>
-      <el-aside width="200px">
-        <el-menu :default-active="activeIndex" mode="vertical" @select="handleSelect">
-          <el-menu-item index="1">送检信息</el-menu-item>
-          <el-menu-item index="2">数据上传</el-menu-item>
-          <el-menu-item index="3">数据分析</el-menu-item>
-          <el-menu-item index="4">流式报表</el-menu-item>
-        </el-menu>
-      </el-aside>
-      <el-main>
-        <component :is="currentView"></component>
-      </el-main>
+      <el-container>
+        <el-aside width="200px">
+          <el-menu :default-active="activeIndex" mode="vertical" @select="handleSelect">
+            <el-menu-item index="1">送检信息</el-menu-item>
+            <el-menu-item index="2">数据上传</el-menu-item>
+            <el-menu-item index="3">数据分析</el-menu-item>
+            <el-menu-item index="4">流式报表</el-menu-item>
+          </el-menu>
+        </el-aside>
+        <el-container>
+          <el-main>
+            <component :is="currentView"></component>
+          </el-main>
+        </el-container>
+      </el-container>
     </el-container>
   </div>
 </template>

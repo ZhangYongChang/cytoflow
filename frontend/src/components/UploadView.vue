@@ -34,8 +34,16 @@ export default {
   methods: {
     querySearch (queryString) {
       this.$axios.post('/api/query_specimenid', { 'specimenno': queryString })
-        .then(response => (this.specimenList = response['data']['data']))
-        .catch(function (error) { console.log(error) })
+        .then(response => {
+          if (response['data']['error_num'] !== 0) {
+            this.$notify.error({ title: '错误', message: response['data']['msg'] })
+          } else {
+            this.specimenList = response['data']['data']
+          }
+        })
+        .catch(error => {
+          this.$notify.error({ title: '错误', message: error })
+        })
     },
     submitUpload () {
       this.$refs.upload.submit()

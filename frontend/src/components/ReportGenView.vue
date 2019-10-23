@@ -52,19 +52,44 @@ export default {
   },
   mounted () {
     this.$axios.post('/api/query_specimen_suggest')
-      .then(response => (this.suggestSpecimen = response['data']['data']))
-      .catch(function (error) { console.log(error) })
+      .then(response => {
+        if (response['data']['error_num'] !== 0) {
+          this.$notify.error({ title: '错误', message: response['data']['msg'] })
+        } else {
+          this.suggestSpecimen = response['data']['data']
+        }
+      })
+      .catch(error => {
+        this.$notify.error({ title: '错误', message: error })
+      })
   },
   methods: {
     handleGen (index, row) {
       this.$axios.post('/api/gen_report', { specimenid: this.tableData[index].specimenid })
-        .then(response => (this.result = response['data']['data']))
-        .catch(function (error) { console.log(error) })
+        .then(response => {
+          if (response['data']['error_num'] !== 0) {
+            this.$notify.error({ title: '错误', message: response['data']['msg'] })
+          } else {
+            this.$notify({ title: '成功', message: '生成报表成功', type: 'success' })
+            this.result = response['data']['data']
+          }
+        })
+        .catch(error => {
+          this.$notify.error({ title: '错误', message: error })
+        })
     },
     handleDownload (index, row) {
       this.$axios.post('/api/query_report', { specimenid: this.tableData[index].specimenid })
-        .then(response => (this.openLink = response['data']['data']))
-        .catch(function (error) { console.log(error) })
+        .then(response => {
+          if (response['data']['error_num'] !== 0) {
+            this.$notify.error({ title: '错误', message: response['data']['msg'] })
+          } else {
+            this.openLink = response['data']['data']
+          }
+        })
+        .catch(error => {
+          this.$notify.error({ title: '错误', message: error })
+        })
     }
   }
 }

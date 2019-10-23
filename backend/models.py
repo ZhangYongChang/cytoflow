@@ -1,5 +1,4 @@
 from django.db import models
-from backend.poiwithinpolygon import isPoiWithinPoly
 import matplotlib.path as mplPath
 import numpy as np
 import json
@@ -108,13 +107,13 @@ class Gate(object):
         result['detail'] = {}
         for polygon in self.polygons:
             result['stat'][polygon.name] = 0
-            result['detail'][polygon.name] = []
+            result['detail'][polygon.name] = np.empty([len(points), 2])
 
         count = 0
         for point in points:
             for polygon in self.polygons:
                 if polygon.isPoiWithinPolyon(point):
-                    #result['detail'][polygon.name].append(point)
+                    result['detail'][polygon.name][result['stat'][polygon.name], 0:2] = point
                     result['stat'][polygon.name] = result['stat'][polygon.name] + 1
                     count = count + 1
                     break
@@ -123,6 +122,7 @@ class Gate(object):
           return result
 
         for key, item in result['stat'].items():
+            result['detail'][key] = result['detail'][key][0:result['stat'][key]]
             result['stat'][key] = float(result['stat'][key]) / float(count)
         return result
 
