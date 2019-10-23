@@ -20,14 +20,6 @@ REPORT_TEMP_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 REPORT_TEMP_DIR = os.path.join(REPORT_TEMP_DIR, "tmp")
 
 
-def forward(x):
-    return x / 1000
-
-
-def inverse(x):
-    return x * 1000
-
-
 def axis_prop(ax, xaxis, yaxis, title, xtitle, ytitle):
     ax.set_xscale(xaxis)
     ax.set_yscale(yaxis)
@@ -124,19 +116,25 @@ class DrawHelp(object):
         j = self.count % self.col
         draw_ax = self.ax[i][j]
         actual_x = df['SSC-A']
-        x = df['SSC-A'] / 1000
-        y = df['PerCP-A']
-        draw_ax.scatter(x, y, s=2, c=self.color, alpha=0.5)
+        actual_y = df['PerCP-A']
+        # 统计
+        gate = Gate()
+        gate.load(vetx_gate)
+        x = actual_x.values.reshape(actual_x.values.size, 1)
+        y = actual_y.values.reshape(actual_y.values.size, 1)
+        points = numpy.concatenate((x, y), axis=1)
+        result = gate.stat(points)
+        # 绘图
+        for key, item in result['detail'].items():
+            draw_x = item[:, 0] / 1000
+            draw_y = item[:, 1]
+            draw_ax.scatter(draw_x, draw_y, s=2, c=key, alpha=0.5)
         axis_prop(draw_ax, "linear", "log", "", "SSC-A", "PerCP-A")
+        # 配置坐标宽度
         draw_ax.set_xlim(0, 250)
         draw_ax.set_ylim(10**1, 10**5)
         self.count = self.count + 1
-        gate = Gate()
-        gate.load(vetx_gate)
-        actual_x = actual_x.values.reshape(x.values.size, 1)
-        y = y.values.reshape(y.values.size, 1)
-        points = numpy.concatenate((actual_x, y), axis=1)
-        return gate.stat(points)
+        return result
 
     def draw(self, fulldir, specimengates):
         result = None

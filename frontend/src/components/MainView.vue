@@ -8,6 +8,7 @@
             <el-menu-item index="2">数据上传</el-menu-item>
             <el-menu-item index="3">数据分析</el-menu-item>
             <el-menu-item index="4">流式报表</el-menu-item>
+            <el-menu-item index="5">标本预览</el-menu-item>
           </el-menu>
         </el-aside>
         <el-container>
@@ -23,27 +24,29 @@
 <script>
 import DatasetView from './DatasetView.vue'
 import UploadView from './UploadView.vue'
-import PatientInputView from './PatientInputView.vue'
+import SpecimenInputView from './SpecimenInputView.vue'
 import ReportGenView from './ReportGenView.vue'
+import SpecimenPreview from './SpecimenPreview.vue'
 export default {
   name: 'MainView',
   data () {
     return {
       activeIndex: '1',
-      currentView: 'PatientInputView'
+      currentView: 'SpecimenInputView'
     }
   },
   components: {
     DatasetView,
     UploadView,
-    PatientInputView,
-    ReportGenView
+    SpecimenInputView,
+    ReportGenView,
+    SpecimenPreview
   },
   methods: {
     handleSelect (key, keyPath) {
       switch (key) {
         case '1':
-          this.currentView = 'PatientInputView'
+          this.currentView = 'SpecimenInputView'
           break
         case '2':
           this.currentView = 'UploadView'
@@ -53,6 +56,9 @@ export default {
           break
         case '4':
           this.currentView = 'ReportGenView'
+          break
+        case '5':
+          this.currentView = 'SpecimenPreview'
           break
         default:
           break

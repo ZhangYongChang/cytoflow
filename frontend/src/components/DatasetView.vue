@@ -1,21 +1,23 @@
 <template>
   <div id="datasetview">
-    <el-row>
-      <el-col :span="5">
-        <el-select size="medium" v-model="specimenid" filterable remote reserve-keyword placeholder="请输入标本号" :remote-method="specimenSearch">
-          <el-option v-for="item in specimenoptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
-        </el-select>
-      </el-col>
-      <el-col :span="5">
-        <el-select v-model="tobo" placeholder="请选择试管">
-          <el-option v-for="item in tobooptions" :key="item.value" :label="item.label" :value="item.value">
-          </el-option>
-        </el-select>
-      </el-col>
-      <el-col :span="5">
-        <el-button type="primary" @click="onSaveGate">提交</el-button>
-      </el-col>
-    </el-row>
+    <div>
+      <el-row>
+        <el-col :span="5">
+          <el-select size="medium" v-model="specimenid" filterable remote reserve-keyword placeholder="请输入标本号" :remote-method="specimenSearch">
+            <el-option v-for="item in specimenoptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
+          </el-select>
+        </el-col>
+        <el-col :span="5">
+          <el-select v-model="tobo" placeholder="请选择试管">
+            <el-option v-for="item in tobooptions" :key="item.value" :label="item.label" :value="item.value">
+            </el-option>
+          </el-select>
+        </el-col>
+        <el-col :span="5">
+          <el-button type="primary" @click="onSaveGate">提交</el-button>
+        </el-col>
+      </el-row>
+    </div>
     <div id="showview">
       <Experiment v-for="(value, key) in showtubor" :key="key" :item="value" v-on:saveGate="saveGate">
       </Experiment>

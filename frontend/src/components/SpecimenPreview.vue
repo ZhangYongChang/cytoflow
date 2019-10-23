@@ -27,7 +27,7 @@
 
 <script>
 export default {
-  name: 'ReportGenView',
+  name: 'SpecimenPreview',
   data () {
     return {
       suggestSpecimen: [],

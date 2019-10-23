@@ -1,15 +1,9 @@
 <template>
-  <div style="width:600px;height:600px">
-    <el-row :gutter="20">
-      <el-col :span="4">
-        <el-button @click="onClickGateUpload">门上传</el-button>
-      </el-col>
-    </el-row>
-    <el-row :gutter="20">
-      <el-col :span="8">
-        <div :id="viewid" style="height:500px;width:500px;float:left;"></div>
-      </el-col>
-    </el-row>
+  <div style="width:600px;height:600px;float:left;border:1px solid #00F">
+    <div style="width:600px;height:100px">
+      <el-button @click="onClickGateUpload">门上传</el-button>
+    </div>
+    <div :id="viewid" style="width:500px;height:500px"></div>
   </div>
 </template>
 
