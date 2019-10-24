@@ -14,7 +14,8 @@ RUN apt-get update \
   && pip3 install cryptography \
   && pip3 install pdfkit \
   && apt-get install wkhtmltopdf \
-  && pip3 install django-cors-headers
+  && pip3 install django-cors-headers \
+  && pip3 install jinja2
 
 COPY *.py /usr/local/lib/python3.6/site-packages/django/db/backends/mysql/
 
