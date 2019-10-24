@@ -21,8 +21,8 @@ class Specimen(models.Model):
     doctor = models.CharField(max_length=64)
     specimentype = models.CharField(max_length=64)
     caseno = models.CharField(max_length=64)
-    collecttime = models.DateTimeField()
-    recvtime = models.DateTimeField()
+    collecttime = models.DateField()
+    recvtime = models.DateField()
     specimendir = models.CharField(max_length=256)
 
     def to_json(self):

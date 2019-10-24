@@ -40,7 +40,6 @@ export default {
       tobolist: [],
       tobooptions: [],
       tobo: '',
-      orig_tobo: [],
       showtubor: {},
       crossFlag: false,
       crossGate: {},
@@ -68,44 +67,18 @@ export default {
       })
     },
     tobo (newVal, oldVal) {
+      this.clearGates()
+      this.showtubor = {}
       this.$axios.post('/api/query_specimen_fcsfile_data', { 'specimenid': this.specimenid, 'filename': newVal })
         .then(response => {
           if (response['data']['error_num'] !== 0) {
             this.$notify.error({ title: '错误', message: response['data']['msg'] })
           }
-          this.orig_tobo = response['data']['data']
+          this.refreshTubo(response['data']['data'])
         })
         .catch(error => {
           this.$notify.error({ title: '错误', message: error })
         })
-    },
-    orig_tobo (newVal, oldVal) {
-      let showGroup = [
-        ['FSC-A', 'SSC-A', 'linearlinear'],
-        ['SSC-A', 'PerCP-A', 'linearlog'],
-        ['FITC-A', 'PE-A', 'loglog'],
-        ['FITC-A', 'PE-Cy7-A', 'loglog'],
-        ['APC-A', 'APC-Cy7-A', 'loglog'],
-        ['FITC-A', 'APC-A', 'loglog'],
-        ['PE-Cy7-A', 'APC-Cy7-A', 'loglog'],
-        ['PE-A', 'PE-Cy7-A', 'loglog']
-      ]
-      this.showtubor = {}
-      for (var j = 0, len = showGroup.length; j < len; j++) {
-        let groupitem = showGroup[j]
-        var xaxis = groupitem[0]
-        var yaxis = groupitem[1]
-        let type = groupitem[2]
-        let data = this.getAxisData(this.orig_tobo, xaxis, yaxis)
-        let key = this.getKey(this.orig_tobo, xaxis, yaxis)
-        this.showtubor[key] = {
-          'key': key,
-          'xaxis': xaxis,
-          'yaxis': yaxis,
-          'data': data,
-          'type': type
-        }
-      }
     },
     specimenlist (newVal, oldVal) {
       this.specimenoptions = this.specimenlist.map(item => {
@@ -117,12 +90,48 @@ export default {
     getKey: function (tmptubor, xaxis, yaxis) {
       return tmptubor['specimenid'] + '/' + tmptubor['filename'] + '(' + xaxis + ',' + yaxis + ')'
     },
+    clearGates: function () {
+      this.crossFlag = false
+      this.crossGate = {}
+      this.polygonFlag = false
+      this.polygonGate = {}
+    },
+    refreshTubo: function (orig) {
+      let showGroup = [
+        ['FSC-A', 'SSC-A', 'linearlinear'],
+        ['SSC-A', 'PerCP-A', 'linearlog'],
+        ['FITC-A', 'PE-A', 'loglog'],
+        ['FITC-A', 'PE-Cy7-A', 'loglog'],
+        ['APC-A', 'APC-Cy7-A', 'loglog'],
+        ['FITC-A', 'APC-A', 'loglog'],
+        ['PE-Cy7-A', 'APC-Cy7-A', 'loglog'],
+        ['PE-A', 'PE-Cy7-A', 'loglog']
+      ]
+      var newtubor = {}
+      for (var j = 0, len = showGroup.length; j < len; j++) {
+        let groupitem = showGroup[j]
+        var xaxis = groupitem[0]
+        var yaxis = groupitem[1]
+        let type = groupitem[2]
+        let data = this.getAxisData(orig, xaxis, yaxis)
+        let key = this.getKey(orig, xaxis, yaxis)
+        newtubor[key] = {
+          'key': key,
+          'xaxis': xaxis,
+          'yaxis': yaxis,
+          'data': data,
+          'type': type
+        }
+      }
+      this.showtubor = newtubor
+      orig = null
+    },
     getAxisData: function (tmptubor, xaxis, yaxis) {
-      var result = []
       var xarray = tmptubor[xaxis]
+      var result = new Array(xarray.length)
       var yarray = tmptubor[yaxis]
       for (let index = 0; index < xarray.length; index++) {
-        result.push([xarray[index], yarray[index]])
+        result[index] = [xarray[index], yarray[index]]
       }
       return result
     },

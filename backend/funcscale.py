@@ -1,9 +1,6 @@
-from abc import ABC
-
 from matplotlib import rcParams
 from matplotlib import scale as scale
-from matplotlib.ticker import (
-    Formatter, NullFormatter, NullLocator, AutoLocator, AutoMinorLocator)
+from matplotlib.ticker import (Formatter, NullFormatter, NullLocator, AutoLocator, AutoMinorLocator)
 
 
 def forward(x):
@@ -14,7 +11,7 @@ def inverse(x):
     return x * 1000
 
 
-class FuncTransform(scale.Transform, ABC):
+class FuncTransform(scale.Transform):
     """
     A simple transform that takes and arbitrary function for the
     forward and inverse transform.

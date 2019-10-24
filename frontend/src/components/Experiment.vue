@@ -24,7 +24,7 @@ export default {
       viewid: this.item['key'],
       xaxis: this.item['xaxis'],
       yaxis: this.item['yaxis'],
-      points: this.item['data'], // .splice(0, 1000),
+      points: this.item['data'].splice(0, 1500),
       type: this.item['type'],
       // 绘图相关的对象
       myChart: null,
@@ -382,9 +382,11 @@ export default {
     if (option && typeof option === 'object') {
       this.myChart.setOption(option, true)
     }
-    // this.initConf()
+    this.initConf()
   },
   destroyed () {
+    this.points = []
+    this.$echarts.dispose(this.myChart)
     this.myChart = null
     this.gateViewGroup = null
     this.points = null

@@ -1,7 +1,7 @@
+from backend.config import (get_fcsfilepath, get_reportfilepath, get_reporttmpdir)
+from backend.funcscale import (FuncScale, FuncScale1000)
 from backend.reporttemplate import REPORT_TEMPLATE
 from backend.models import Gate
-from backend.funcscale import (FuncScale, FuncScale1000)
-from backend.config import (get_fcsfilepath, get_reportfilepath, get_reporttmpdir)
 from matplotlib import pyplot as plt
 from matplotlib import scale as scale
 from jinja2 import Template
@@ -40,7 +40,7 @@ class FlowFigDrawer(object):
 
     def get_axes(self):
         if self.fig is None:
-            self.fig = plt.figure(figsize=[12.0, 16.0])
+            self.fig = plt.figure(figsize=[7.5, 9.5])
 
         if self.count < self.row * self.col:
             self.count = self.count + 1
@@ -48,18 +48,24 @@ class FlowFigDrawer(object):
         else:
             self.count = 1
             self.copy_last_plot()
-            self.fig = plt.figure(figsize=[12.0, 16.0])
+            self.fig = plt.figure(figsize=[7.5, 9.5])
             return self.fig.add_subplot(self.row, self.col, self.count)
 
     def copy_last_plot(self):
-        plt.tight_layout(pad=2, h_pad=2, w_pad=2)
+        plt.tight_layout(pad=1, h_pad=1, w_pad=1)
         imagebuf = io.BytesIO()
         self.fig.savefig(imagebuf)
         figbytes = base64.b64encode(imagebuf.getvalue())
         imagebuf.close()
         self.imgs.append(bytes.decode(figbytes))
 
+    def get_tubor_name(self, filename):
+        title = os.path.splitext(os.path.basename(filename))[0]
+        title = 'Tubor_' + title
+        return title
+
     def draw_normal_gate(self, filename, gate, df):
+        title=self.get_tubor_name(filename)
         draw_ax = self.get_axes()
         if gate['xaxis'] == 'FSC-A' and gate['yaxis'] == 'SSC-A':
             x = df['FSC-A']
@@ -72,11 +78,11 @@ class FlowFigDrawer(object):
             draw_ax.hlines(gate['point'][1], x0, xmax, color="black")
             draw_ax.vlines(gate['point'][0], y0, ymax, color="black")
             self.axis_prop(draw_ax, 'funcscale1000',
-                           'funcscale1000', "", "FSC-A", "SSC-A")
+                           'funcscale1000', title, "FSC-A", "SSC-A")
         if gate['xaxis'] == 'FITC-A' and gate['yaxis'] == 'PE-A':
             draw_ax.scatter(
                 df['FITC-A'], df['PE-A'], s=2, c=self.color, alpha=0.5)
-            self.axis_prop(draw_ax, "log", "log", "", "FITC-A", "PE-A")
+            self.axis_prop(draw_ax, "log", "log", title, "FITC-A", "PE-A")
             draw_ax.set_xlim(10 ** 1, 10 ** 5)
             draw_ax.set_ylim(10 ** 1, 10 ** 5)
             draw_ax.hlines(gate['point'][1], 10 ** 1, 10 ** 5, color="black")
@@ -84,7 +90,7 @@ class FlowFigDrawer(object):
         if gate['xaxis'] == 'FITC-A' and gate['yaxis'] == 'PE-Cy7-A':
             draw_ax.scatter(
                 df['FITC-A'], df['PE-Cy7-A'], s=2, c=self.color, alpha=0.5)
-            self.axis_prop(draw_ax, "log", "log", "", "FITC-A", "PE-Cy7-A")
+            self.axis_prop(draw_ax, "log", "log", title, "FITC-A", "PE-Cy7-A")
             draw_ax.set_xlim(10 ** 1, 10 ** 5)
             draw_ax.set_ylim(10 ** 1, 10 ** 5)
             draw_ax.hlines(gate['point'][1], 10 ** 1, 10 ** 5, color="black")
@@ -92,7 +98,7 @@ class FlowFigDrawer(object):
         if gate['xaxis'] == 'APC-A' and gate['yaxis'] == 'APC-Cy7-A':
             draw_ax.scatter(
                 df['APC-A'], df['APC-Cy7-A'], s=2, c=self.color, alpha=0.5)
-            self.axis_prop(draw_ax, "log", "log", "", "APC-A", "APC-Cy7-A")
+            self.axis_prop(draw_ax, "log", "log", title, "APC-A", "APC-Cy7-A")
             draw_ax.set_xlim(10 ** 1, 10 ** 5)
             draw_ax.set_ylim(10 ** 1, 10 ** 5)
             draw_ax.hlines(gate['point'][1], 10 ** 1, 10 ** 5, color="black")
@@ -100,7 +106,7 @@ class FlowFigDrawer(object):
         if gate['xaxis'] == 'FITC-A' and gate['yaxis'] == 'APC-A':
             draw_ax.scatter(
                 df['FITC-A'], df['APC-A'], s=2, c=self.color, alpha=0.5)
-            self.axis_prop(draw_ax, "log", "log", "", "FITC-A", "APC-A")
+            self.axis_prop(draw_ax, "log", "log", title, "FITC-A", "APC-A")
             draw_ax.set_xlim(10 ** 1, 10 ** 5)
             draw_ax.set_ylim(10 ** 1, 10 ** 5)
             draw_ax.hlines(gate['point'][1], 10 ** 1, 10 ** 5, color="black")
@@ -108,7 +114,7 @@ class FlowFigDrawer(object):
         if gate['xaxis'] == 'PE-Cy7-A' and gate['yaxis'] == 'APC-Cy7-A':
             draw_ax.scatter(
                 df['PE-Cy7-A'], df['APC-Cy7-A'], s=2, c=self.color, alpha=0.5)
-            self.axis_prop(draw_ax, "log", "log", "", "PE-Cy7-A", "APC-Cy7-A")
+            self.axis_prop(draw_ax, "log", "log", title, "PE-Cy7-A", "APC-Cy7-A")
             draw_ax.set_xlim(10 ** 1, 10 ** 5)
             draw_ax.set_ylim(10 ** 1, 10 ** 5)
             draw_ax.hlines(gate['point'][1], 10 ** 1, 10 ** 5, color="black")
@@ -116,13 +122,14 @@ class FlowFigDrawer(object):
         if gate['xaxis'] == 'PE-A' and gate['yaxis'] == 'PE-Cy7-A':
             draw_ax.scatter(
                 df['PE-A'], df['PE-Cy7-A'], s=2, c=self.color, alpha=0.5)
-            self.axis_prop(draw_ax, "log", "log", "", "PE-A", "PE-Cy7-A")
+            self.axis_prop(draw_ax, "log", "log", title, "PE-A", "PE-Cy7-A")
             draw_ax.set_xlim(10 ** 1, 10 ** 5)
             draw_ax.set_ylim(10 ** 1, 10 ** 5)
             draw_ax.hlines(gate['point'][1], 10 ** 1, 10 ** 5, color="black")
             draw_ax.vlines(gate['point'][0], 10 ** 1, 10 ** 5, color="black")
 
     def draw_vetx_gate(self, filename, vetx_gate, df):
+        title = self.get_tubor_name(filename)
         draw_ax = self.get_axes()
         actual_x = df['SSC-A']
         actual_y = df['PerCP-A']
@@ -138,7 +145,7 @@ class FlowFigDrawer(object):
             draw_x = item[:, 0]
             draw_y = item[:, 1]
             draw_ax.scatter(draw_x, draw_y, s=2, c=key, alpha=0.5)
-        self.axis_prop(draw_ax, "funcscale1000", "log", "", "SSC-A", "PerCP-A")
+        self.axis_prop(draw_ax, "funcscale1000", "log", title, "SSC-A", "PerCP-A")
         # 配置坐标宽度
         draw_ax.set_xlim(0, 250000)
         draw_ax.set_ylim(10 ** 1, 10 ** 5)
@@ -196,10 +203,10 @@ class PdfReportRender(object):
         file.write(html)
         file.close()
         options = {
-            'page-size': 'Letter',
+            'page-size': 'A4',
             'margin-top': '0.75in',
-            'margin-right': '0.75in',
-            'margin-bottom': '0.75in',
+            'margin-right': '0.50in',
+            'margin-bottom': '1.00in',
             'margin-left': '0.75in',
             'encoding': "UTF-8",
             'no-outline': None
