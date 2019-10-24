@@ -47,11 +47,11 @@
               </el-select>
             </el-form-item>
             <el-form-item label="送检时间">
-              <el-date-picker v-model="form.collecttime" type="datetime" placeholder="选择送检时间">
+              <el-date-picker v-model="form.collecttime" type="date" placeholder="选择送检时间">
               </el-date-picker>
             </el-form-item>
             <el-form-item label="接收时间">
-              <el-date-picker v-model="form.recvtime" type="datetime" placeholder="选择接收时间">
+              <el-date-picker v-model="form.recvtime" type="date" placeholder="选择接收时间">
               </el-date-picker>
             </el-form-item>
           </el-col>

@@ -11,19 +11,19 @@ class Specimen(models.Model):
         db_table = 'specimen'
 
     specimenid = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=16, help_text=u'名字')
+    name = models.CharField(max_length=64, help_text=u'名字')
     sex = models.CharField(max_length=8, help_text=u'年龄')
     age = models.IntegerField()
-    specimenno = models.CharField(max_length=16)
+    specimenno = models.CharField(max_length=64)
     hospital = models.CharField(max_length=64)
     department = models.CharField(max_length=64)
-    bedno = models.CharField(max_length=16)
-    doctor = models.CharField(max_length=16)
-    specimentype = models.CharField(max_length=16)
-    caseno = models.CharField(max_length=32)
+    bedno = models.CharField(max_length=64)
+    doctor = models.CharField(max_length=64)
+    specimentype = models.CharField(max_length=64)
+    caseno = models.CharField(max_length=64)
     collecttime = models.DateTimeField()
     recvtime = models.DateTimeField()
-    specimendir = models.CharField(max_length=64)
+    specimendir = models.CharField(max_length=256)
 
     def to_json(self):
         return {

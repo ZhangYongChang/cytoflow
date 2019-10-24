@@ -1,27 +1,18 @@
 from django.views.decorators.http import require_http_methods
-from backend.models import Specimen, SpecimenGate, SpecimenReport, Gate
-from backend.genreportools import render_report
-import matplotlib.pyplot as plt
+from backend.models import (Specimen, SpecimenGate, SpecimenReport, Gate)
+from backend.config import (get_fcsfiledir, get_fcsfilepath, SSC_A, PerCP_A)
+from backend.pdfreportrender import PdfReportRender
 import backend.errormgr as em
-import matplotlib
 import fcsparser
 import datetime
-import base64
 import numpy
 import json
 import uuid
 import os
 import re
-import io
 import logging
 
-matplotlib.use('agg')
-
 logger = logging.getLogger('log')
-DATASET_ROOTDIR = 'datasets'
-
-CLASSFITY_X = 'SSC-A'
-CLASSFITY_Y = 'PerCP-A'
 
 
 @require_http_methods(["POST"])
@@ -44,11 +35,23 @@ def create_specimen(request):
             recvtime=params['recvtime'],
             specimendir=randomdir)
         specimen.save()
-        os.mkdir(os.path.join(DATASET_ROOTDIR, specimen.specimendir))
+        os.mkdir(get_fcsfiledir(specimen.specimendir))
         return em.create_sucess_response(specimen.to_json())
     except Exception as e:
-        logger.error(e)
+        logger.exception(e)
         return em.create_fail_response(e, em.CREATE_SPECIMEN_FAILED)
+
+
+@require_http_methods(["POST"])
+def delete_specimen(request):
+    try:
+        params = json.loads(request.body)
+        specimen = Specimen.objects.get(specimenid=params['specimenid'])
+        specimen.delete()
+        return em.create_success_null()
+    except Exception as e:
+        logger.exception(e)
+        return em.create_fail_response(e, em.FAIL)
 
 
 @require_http_methods(["POST"])
@@ -66,7 +69,7 @@ def query_specimenid(request):
             })
         return em.create_sucess_response(result)
     except Exception as e:
-        logger.error(e)
+        logger.exception(e)
         return em.create_fail_response(e, em.FAIL)
 
 
@@ -79,7 +82,7 @@ def query_specimen_suggest(request):
             result.append(specimen.to_json())
         return em.create_sucess_response(result)
     except Exception as e:
-        logger.error(e)
+        logger.exception(e)
         return em.create_fail_response(e, em.FAIL)
 
 
@@ -92,13 +95,12 @@ def query_specimen_fcsfiles(request):
         querysubdir = specimen.specimendir
         response = {}
         fcsfilenames = [
-            filename for filename in os.listdir(
-                os.path.join(DATASET_ROOTDIR, querysubdir))
+            filename for filename in os.listdir(get_fcsfiledir(querysubdir))
             if re.search('.fcs$', filename)
         ]
         return em.create_sucess_response({'fcsfilenames': fcsfilenames})
     except Exception as e:
-        logger.error(e)
+        logger.exception(e)
         return em.create_fail_response(e, em.FAIL)
 
 
@@ -114,7 +116,7 @@ def upload_specimen_fcsfiles(request):
             return em.create_fail_response('specimen is not exist', em.FAIL)
 
         storgedir = specimen.specimendir
-        specimenfilepath = os.path.join(DATASET_ROOTDIR, storgedir, file.name)
+        specimenfilepath = get_fcsfilepath(storgedir, file.name)
         if not file:
             return em.create_fail_response('no files for upload', em.FAIL)
 
@@ -124,7 +126,7 @@ def upload_specimen_fcsfiles(request):
         destination.close()
         return em.create_success_null()
     except Exception as e:
-        logger.error(e)
+        logger.exception(e)
         return em.create_fail_response(e, em.FAIL)
 
 
@@ -141,15 +143,14 @@ def query_specimen_fcsfile_data(request):
 
         querysubdir = specimen.specimendir
         cols = {}
-        meta, df = fcsparser.parse(
-            os.path.join(DATASET_ROOTDIR, querysubdir, filename))
+        meta, df = fcsparser.parse(get_fcsfilepath(querysubdir, filename))
         for col in numpy.array(df.columns).tolist():
             cols[col] = df[col].tolist()
         cols['filename'] = filename
         cols['specimenid'] = specimenid
         return em.create_sucess_response(cols)
     except Exception as e:
-        logger.error(e)
+        logger.exception(e)
         return em.create_fail_response(e, em.FAIL)
 
 
@@ -168,7 +169,7 @@ def save_spceiment_fcsfile_gate(request):
         gate.save()
         return em.create_sucess_response(gate.to_json())
     except Exception as e:
-        logger.error(e)
+        logger.exception(e)
         return em.create_fail_response(e, em.FAIL)
 
 
@@ -182,22 +183,24 @@ def gen_report(request):
             return em.create_fail_response('object not exist', em.FAIL)
 
         specimengates = SpecimenGate.objects.filter(specimenid=specimenid)
-        filename = render_report(DATASET_ROOTDIR, specimen, specimengates)
+        render = PdfReportRender(specimen, specimengates)
+        filename = render.render_report()
         createtime = datetime.datetime.now()
         try:
             hisreport = SpecimenReport.objects.get(specimenid=specimenid)
             hisreport.delete()
         except Exception as e:
-            logger.error(e)
+            logger.exception(e)
 
         report = SpecimenReport(
             specimenid=specimenid,
             specimenreportpath=filename,
             createtime=createtime)
         report.save()
+        logger.info('report file:' + filename)
         return em.create_sucess_response(report.to_json())
     except Exception as e:
-        logger.error(e)
+        logger.exception(e)
         return em.create_fail_response(e, em.FAIL)
 
 
@@ -210,12 +213,12 @@ def query_report(request):
             specimenid=specimenid).order_by('createtime')[0]
         return em.create_sucess_response({
             'filename':
-            report.specimenreportpath,
+                report.specimenreportpath,
             'token':
-            datetime.datetime.now()
+                datetime.datetime.now()
         })
     except Exception as e:
-        logger.error(e)
+        logger.exception(e)
         return em.create_fail_response(e, em.FAIL)
 
 
@@ -230,7 +233,7 @@ def query_gate(request):
             result.append(gate.to_json())
         return em.create_sucess_response(result)
     except Exception as e:
-        logger.error(e)
+        logger.exception(e)
         return em.create_fail_response(e, em.FAIL)
 
 
@@ -243,17 +246,16 @@ def cell_stat(request):
         specimenid = params['specimenid']
         polygons = params['polygons']
         specimen = Specimen.objects.get(specimenid=specimenid)
-        fcsfilepath = os.path.join(DATASET_ROOTDIR, specimen.specimendir,
-                                   filename)
-        meta, df = fcsparser.parse(fcsfilepath)
+        meta, df = fcsparser.parse(
+            get_fcsfilepath(specimen.specimendir, filename))
 
         points = []
-        for i, element in enumerate(df[CLASSFITY_X]):
-            points.append([element, df[CLASSFITY_Y][i]])
+        for i, element in enumerate(df[SSC_A]):
+            points.append([element, df[PerCP_A][i]])
 
-        gate = Gate(CLASSFITY_X, CLASSFITY_Y, polygons)
+        gate = Gate(SSC_A, PerCP_A, polygons)
         result = gate.stat(points)
         return em.create_sucess_response(result)
     except Exception as e:
-        logger.error(e)
+        logger.exception(e)
         return em.create_fail_response(e, em.FAIL)

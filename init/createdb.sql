@@ -5,18 +5,18 @@ use `cytoflow`;
 DROP TABLE IF EXISTS `specimen`;
 CREATE TABLE `specimen` (
   `specimenid` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(16) DEFAULT NULL,
+  `name` varchar(64) DEFAULT NULL,
   `sex` varchar(8) DEFAULT NULL,
   `age` int(11) DEFAULT NULL,
-  `specimenno` varchar(20) DEFAULT NULL,
-  `hospital` varchar(20) DEFAULT NULL,
-  `department` varchar(20) DEFAULT NULL,
-  `bedno` varchar(20) DEFAULT NULL,
-  `doctor` varchar(20) DEFAULT NULL,
-  `specimentype` varchar(20) DEFAULT NULL,
-  `caseno` varchar(20) DEFAULT NULL,
-  `collecttime` datetime DEFAULT NULL,
-  `recvtime` datetime DEFAULT NULL,
+  `specimenno` varchar(64) DEFAULT NULL,
+  `hospital` varchar(64) DEFAULT NULL,
+  `department` varchar(64) DEFAULT NULL,
+  `bedno` varchar(64) DEFAULT NULL,
+  `doctor` varchar(64) DEFAULT NULL,
+  `specimentype` varchar(64) DEFAULT NULL,
+  `caseno` varchar(64) DEFAULT NULL,
+  `collecttime` date DEFAULT NULL,
+  `recvtime` date DEFAULT NULL,
   `specimendir` varchar(256) DEFAULT NULL,
   PRIMARY KEY(`specimenid`)
 ) ENGINE=InnoDB;
