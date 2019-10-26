@@ -195,6 +195,22 @@ def query_gate(request):
 
 
 @require_http_methods(["POST"])
+def query_fcsfile_gate(request):
+    try:
+        params = json.loads(request.body)
+        specimenid = params['specimenid']
+        fcsfilename = params['fcsfilename']
+        gates = SpecimenGate.objects.get(specimenid=specimenid,fcsfilename=fcsfilename)
+        result = []
+        for gate in gates:
+            result.append(gate.to_json())
+        return em.create_sucess_response(result)
+    except Exception as e:
+        logger.exception(e)
+        return em.create_fail_response(e, em.FAIL)
+
+
+@require_http_methods(["POST"])
 def delete_gate(request):
     try:
         params = json.loads(request.body)
@@ -264,17 +280,18 @@ def cell_stat(request):
         params = json.loads(request.body)
         filename = params['fcsfilename']
         specimenid = params['specimenid']
-        polygons = params['polygons']
+        polygons = params['polygongate']
         specimen = Specimen.objects.get(specimenid=specimenid)
-        meta, df = fcsparser.parse(
-            get_fcsfilepath(specimen.specimendir, filename))
-
-        points = []
-        for i, element in enumerate(df[SSC_A]):
-            points.append([element, df[PerCP_A][i]])
-
-        gate = Gate(SSC_A, PerCP_A, polygons)
+        meta, df = fcsparser.parse(get_fcsfilepath(specimen.specimendir, filename))
+        actual_x = df[SSC_A]
+        actual_y = df[PerCP_A]
+        gate = Gate()
+        gate.load(polygons)
+        x = actual_x.values.reshape(actual_x.values.size, 1)
+        y = actual_y.values.reshape(actual_y.values.size, 1)
+        points = numpy.concatenate((x, y), axis=1)
         result = gate.stat(points)
+        result['detail'] = {}
         return em.create_sucess_response(result)
     except Exception as e:
         logger.exception(e)

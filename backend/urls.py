@@ -13,7 +13,9 @@ urlpatterns = [
     url('query_specimen_fcsfile_data', views.query_specimen_fcsfile_data),
     # gate
     url('save_spceiment_fcsfile_gate', views.save_spceiment_fcsfile_gate),
+    url('query_fcsfile_gate', views.query_fcsfile_gate),
     # report
     url('gen_report', views.gen_report),
-    url('query_report', views.query_report)
+    url('query_report', views.query_report),
+    url('cell_stat', views.cell_stat)
 ]

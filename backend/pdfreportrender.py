@@ -1,4 +1,4 @@
-from backend.config import (get_fcsfilepath, get_reportfilepath, get_reporttmpdir)
+from backend.config import (get_fcsfilepath, get_reportfilepath, get_reporttmpdir, SSC_A, PerCP_A)
 from backend.funcscale import (FuncScale, FuncScale1000)
 from backend.reporttemplate import REPORT_TEMPLATE
 from backend.models import Gate
@@ -145,7 +145,7 @@ class FlowFigDrawer(object):
             draw_x = item[:, 0]
             draw_y = item[:, 1]
             draw_ax.scatter(draw_x, draw_y, s=2, c=key, alpha=0.5)
-        self.axis_prop(draw_ax, "funcscale1000", "log", title, "SSC-A", "PerCP-A")
+        self.axis_prop(draw_ax, "funcscale1000", "log", title, SSC_A, PerCP_A)
         # 配置坐标宽度
         draw_ax.set_xlim(0, 250000)
         draw_ax.set_ylim(10 ** 1, 10 ** 5)

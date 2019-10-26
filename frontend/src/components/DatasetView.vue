@@ -18,9 +18,19 @@
         </el-col>
       </el-row>
     </div>
-    <div id="showview">
-      <Experiment v-for="(value, key) in showtubor" :key="key" :item="value" v-on:saveGate="saveGate">
+    <div id="showview" style="width:1250px;float:left">
+      <Experiment v-for="(value, key) in showtubor" :key="key" :item="value" :hisGates="hisGates" v-on:saveGate="saveGate">
       </Experiment>
+    </div>
+    <div id="showresult" style="float:right">
+      <el-card class="box-card">
+        <div slot="header" class="clearfix">
+          <span>细胞比例</span>
+        </div>
+        <div v-for="(value, key) in polygonGateStat" :key="key" class="text item">
+          {{key}}:{{value}}%
+        </div>
+      </el-card>
     </div>
   </div>
 </template>
@@ -45,7 +55,9 @@ export default {
       crossGate: {},
       polygonFlag: false,
       polygonGate: {},
-      reslut: {}
+      polygonGateStat: {},
+      hisGates: {},
+      result: ''
     }
   },
   watch: {
@@ -75,6 +87,16 @@ export default {
             this.$notify.error({ title: '错误', message: response['data']['msg'] })
           }
           this.refreshTubo(response['data']['data'])
+        })
+        .catch(error => {
+          this.$notify.error({ title: '错误', message: error })
+        })
+      this.$axios.post('/api/query_fcsfile_gate', { 'specimenid': this.specimenid, 'fcsfilename': newVal })
+        .then(response => {
+          if (response['data']['error_num'] !== 0) {
+            this.$notify.error({ title: '错误', message: response['data']['msg'] })
+          }
+          this.hisGates = response['data']['data']
         })
         .catch(error => {
           this.$notify.error({ title: '错误', message: error })
@@ -201,6 +223,24 @@ export default {
           gatetype: 1,
           gates: gates
         }
+        this.$axios.post('api/cell_stat', { specimenid: this.specimenid, fcsfilename: this.tobo, polygongate: gates })
+          .then(response => {
+            if (response['data']['error_num'] !== 0) {
+              this.$notify.error({ title: '错误', message: response['data']['msg'] })
+            } else {
+              this.polygonGateStat = response['data']['data']['stat']
+              let result = {
+                '淋巴细胞(绿色)': parseFloat(this.polygonGateStat['green'] * 100).toFixed(2),
+                '前体B淋巴细胞(黄色)': parseFloat(this.polygonGateStat['yellow'] * 100).toFixed(2),
+                '异常细胞群(红色)': parseFloat(this.polygonGateStat['red'] * 100).toFixed(2),
+                '有核红区域细胞(紫色)': parseFloat(this.polygonGateStat['purple'] * 100).toFixed(2)
+              }
+              this.polygonGateStat = result
+            }
+          })
+          .catch(error => {
+            this.$notify.error({ title: '错误', message: error })
+          })
       } else {
         if (this.crossFlag === false) {
           this.crossGate = {
@@ -228,5 +268,25 @@ export default {
 }
 .el-col {
   border-radius: 4px;
+}
+.box-card {
+  width: 380px;
+}
+
+text {
+  font-size: 14px;
+}
+
+.item {
+  margin-bottom: 18px;
+}
+
+.clearfix:before,
+.clearfix:after {
+  display: table;
+  content: '';
+}
+.clearfix:after {
+  clear: both;
 }
 </style>

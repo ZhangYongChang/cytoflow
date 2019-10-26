@@ -17,6 +17,11 @@ export default {
       type: Object,
       default: Object,
       required: true
+    },
+    hisGates: {
+      type: Object,
+      default: Object,
+      required: true
     }
   },
   data () {
@@ -214,7 +219,7 @@ export default {
       var option = {
         animation: false,
         toolbox: {
-          show: true,
+          show: false,
           feature: {
             dataZoom: {
               yAxisIndex: 'none'
@@ -223,6 +228,7 @@ export default {
           }
         },
         tooltip: {
+          show: false,
           trigger: 'item',
           axisPointer: {
             type: 'cross'
