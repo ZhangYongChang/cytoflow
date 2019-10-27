@@ -159,11 +159,13 @@ def save_spceiment_fcsfile_gate(request):
     try:
         params = json.loads(request.body)
         # delete history gate
-        # hisgates = SpecimenGate.objects.filter(specimenid=params['specimenid'], fcsfilename=params['fcsfilename'],
-        #                             gatetype=params['gatetype'])
-        # if hisgates is not None:
-        #     hisgates.delete()
-        #     logger.info("delete history gate success")
+        hisgates = SpecimenGate.objects.filter(specimenid=params['specimenid'],
+                                               fcsfilename=params['fcsfilename'],
+                                               gatetype=params['gatetype'])
+        if hisgates is not None:
+            hisgates.delete()
+            logger.info("delete history gate success")
+        
         now_time = datetime.datetime.now()
         gate = SpecimenGate(
             specimenid=params['specimenid'],
@@ -200,7 +202,8 @@ def query_fcsfile_gate(request):
         params = json.loads(request.body)
         specimenid = params['specimenid']
         fcsfilename = params['fcsfilename']
-        gates = SpecimenGate.objects.get(specimenid=specimenid,fcsfilename=fcsfilename)
+        gates = SpecimenGate.objects.filter(
+            specimenid=specimenid, fcsfilename=fcsfilename)
         result = []
         for gate in gates:
             result.append(gate.to_json())
@@ -282,7 +285,8 @@ def cell_stat(request):
         specimenid = params['specimenid']
         polygons = params['polygongate']
         specimen = Specimen.objects.get(specimenid=specimenid)
-        meta, df = fcsparser.parse(get_fcsfilepath(specimen.specimendir, filename))
+        meta, df = fcsparser.parse(
+            get_fcsfilepath(specimen.specimendir, filename))
         actual_x = df[SSC_A]
         actual_y = df[PerCP_A]
         gate = Gate()

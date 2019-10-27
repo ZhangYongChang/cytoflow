@@ -1,7 +1,7 @@
 <template>
   <div style="width:600px;height:600px;float:left;border:1px solid #00F">
     <div style="width:600px;height:100px">
-      <el-button @click="onClickGateUpload">门上传</el-button>
+      <el-checkbox v-model="checked" @change="changeSelect">选择</el-checkbox>
     </div>
     <div :id="viewid" style="width:500px;height:500px"></div>
   </div>
@@ -18,7 +18,7 @@ export default {
       default: Object,
       required: true
     },
-    hisGates: {
+    dbGate: {
       type: Object,
       default: Object,
       required: true
@@ -31,6 +31,7 @@ export default {
       yaxis: this.item['yaxis'],
       points: this.item['data'].splice(0, 1500),
       type: this.item['type'],
+      initGate: this.dbGate,
       // 绘图相关的对象
       myChart: null,
       gateViewGroup: null,
@@ -58,7 +59,23 @@ export default {
         this.registerGateDraw()
       }
       this.gateViewGroup.removeAll()
-      this.gate = []
+      this.initDbGate()
+    },
+    initDbGate: function () {
+      if (this.initGate instanceof Array) {
+        this.checked = true
+        if (this.gateType === 'cross') {
+          this.crossGate = this.initGate
+        } else {
+          this.polygonGate = this.initGate
+        }
+        this.preGateData()
+        this.gateCoord2Pixel()
+        this.drawGate()
+        this.notifyUpdate()
+      } else {
+        this.checked = false
+      }
     },
     registerGateDraw: function () {
       this.myChart.getZr().on('mousedown', this.onMouseDown)
@@ -66,44 +83,90 @@ export default {
       this.myChart.getZr().on('mouseup', this.onMouseUp)
       this.myChart.getZr().on('dblclick', this.onDbClick)
     },
+    drawGate: function () {
+      if (this.gateType === 'cross') {
+        this.drawCrossGate({ offsetX: this.crossGate[0], offsetY: this.crossGate[1] })
+      } else {
+        this.drawPolygonGate(this.polygonGate)
+      }
+    },
+    drawCrossGate: function (e) {
+      // 横线
+      var xLine = new echarts.graphic.Line({
+        shape: {
+          x1: e.offsetX - 100,
+          y1: e.offsetY,
+          x2: e.offsetX + 100,
+          y2: e.offsetY
+        },
+        style: {
+          stroke: 'green',
+          lineWidth: 2
+        }
+      })
+      // 竖线
+      var yLine = new echarts.graphic.Line({
+        shape: {
+          x1: e.offsetX,
+          y1: e.offsetY - 100,
+          x2: e.offsetX,
+          y2: e.offsetY + 100
+        },
+        style: {
+          stroke: 'green',
+          lineWidth: 2
+        }
+      })
+      this.gateViewGroup.add(xLine)
+      this.gateViewGroup.add(yLine)
+      this.myChart.getZr().add(this.gateViewGroup)
+    },
+    drawPolygonGate: function (polygonGate) {
+      polygonGate.forEach((polygon) => {
+        for (var i = 0; i < polygon.length; ++i) {
+          if (i === polygon.length - 1) {
+            var xLine = new echarts.graphic.Line({
+              shape: {
+                x1: polygon[i][0],
+                y1: polygon[i][1],
+                x2: polygon[0][0],
+                y2: polygon[0][1]
+              },
+              style: {
+                stroke: 'green',
+                lineWidth: 2
+              }
+            })
+            this.gateViewGroup.add(xLine)
+          } else {
+            xLine = new echarts.graphic.Line({
+              shape: {
+                x1: polygon[i][0],
+                y1: polygon[i][1],
+                x2: polygon[i + 1][0],
+                y2: polygon[i + 1][1]
+              },
+              style: {
+                stroke: 'green',
+                lineWidth: 2
+              }
+            })
+            this.gateViewGroup.add(xLine)
+          }
+        }
+        this.myChart.getZr().add(this.gateViewGroup)
+      })
+    },
     onMouseDown: function (e) {
       // 如果是十字门直接绘制
       if (this.gateType === 'cross') {
-        // 横线
-        var xLine = new echarts.graphic.Line({
-          shape: {
-            x1: e.offsetX - 100,
-            y1: e.offsetY,
-            x2: e.offsetX + 100,
-            y2: e.offsetY
-          },
-          style: {
-            stroke: 'green',
-            lineWidth: 2
-          }
-        })
-        // 竖线
-        var yLine = new echarts.graphic.Line({
-          shape: {
-            x1: e.offsetX,
-            y1: e.offsetY - 100,
-            x2: e.offsetX,
-            y2: e.offsetY + 100
-          },
-          style: {
-            stroke: 'green',
-            lineWidth: 2
-          }
-        })
-        this.gateViewGroup.add(xLine)
-        this.gateViewGroup.add(yLine)
-        this.myChart.getZr().add(this.gateViewGroup)
         this.crossGate = [e.offsetX, e.offsetY]
+        this.drawCrossGate(e)
       } else {
         if (!this.drawing) {
           this.drawing = true
-          this.gate.push([])
-          this.polygonPoints = this.gate[this.gate.length - 1]
+          this.polygonGate.push([])
+          this.polygonPoints = this.polygonGate[this.polygonGate.length - 1]
         }
       }
     },
@@ -156,28 +219,42 @@ export default {
         })
       }
       this.polygonPoints.push(this.polygonPoints[0])
-      this.polygonGate.push(this.polygonPoints)
     },
-    onClickGateUpload: function () {
-      if (this.gateType === 'cross') {
-        this.crossGate = this.point2Coord(this.crossGate)
-      } else {
-        var gateData = []
-        this.polygonGate.forEach((elem, index) => {
-          var polygon = []
-          elem.forEach((point, index) => {
-            polygon.push(this.point2Coord(point))
-          })
-          gateData.push(polygon)
-        })
-        this.polygonGate = gateData
-      }
+    changeSelect (value) {
+      this.gatePixel2Coord()
       this.postGateData()
       var gatetype = 0
       if (this.gateType === 'polygon') {
         gatetype = 1
       }
-      this.$emit('saveGate', {
+      if (value) {
+        this.$emit('addGate', {
+          gatetype: gatetype,
+          gates: {
+            xaxis: this.xaxis,
+            yaxis: this.yaxis,
+            crossGate: this.crossGate,
+            polygonGate: this.polygonGate
+          }
+        })
+      } else {
+        this.$emit('deleteGate', {
+          gatetype: gatetype,
+          gates: {
+            xaxis: this.xaxis,
+            yaxis: this.yaxis
+          }
+        })
+      }
+    },
+    notifyUpdate: function () {
+      this.gatePixel2Coord()
+      this.postGateData()
+      var gatetype = 0
+      if (this.gateType === 'polygon') {
+        gatetype = 1
+      }
+      this.$emit('addGate', {
         gatetype: gatetype,
         gates: {
           xaxis: this.xaxis,
@@ -186,6 +263,36 @@ export default {
           polygonGate: this.polygonGate
         }
       })
+    },
+    gatePixel2Coord: function () {
+      if (this.gateType === 'cross') {
+        this.crossGate = this.pixel2Coord(this.crossGate)
+      } else {
+        var gateData = []
+        this.polygonGate.forEach((elem, index) => {
+          var polygon = []
+          elem.forEach((point, index) => {
+            polygon.push(this.pixel2Coord(point))
+          })
+          gateData.push(polygon)
+        })
+        this.polygonGate = gateData
+      }
+    },
+    gateCoord2Pixel: function () {
+      if (this.gateType === 'cross') {
+        this.crossGate = this.coord2Pixel(this.crossGate)
+      } else {
+        var gateData = []
+        this.polygonGate.forEach((elem, index) => {
+          var polygon = []
+          elem.forEach((point, index) => {
+            polygon.push(this.coord2Pixel(point))
+          })
+          gateData.push(polygon)
+        })
+        this.polygonGate = gateData
+      }
     },
     postGateData: function () {
       let result = []
@@ -205,8 +312,29 @@ export default {
         this.polygonGate = result
       }
     },
-    point2Coord: function (position) {
+    preGateData: function () {
+      let result = []
+      if (this.type === 'linearlinear' && this.gateType === 'cross') {
+        result = [this.crossGate[0] / 1000, this.crossGate[1] / 1000]
+        this.crossGate = result
+        return
+      }
+      if (this.type === 'linearlog' && this.gateType === 'polygon') {
+        this.polygonGate.forEach((elem, index) => {
+          var polygon = []
+          elem.forEach((point, index) => {
+            polygon.push([point[0] / 1000, point[1]])
+          })
+          result.push(polygon)
+        })
+        this.polygonGate = result
+      }
+    },
+    pixel2Coord: function (position) {
       return this.myChart.convertFromPixel({ seriesIndex: 0 }, position)
+    },
+    coord2Pixel: function (position) {
+      return this.myChart.convertToPixel({ seriesIndex: 0 }, position)
     },
     createLinearLogOption: function () {
       this.points.forEach((elem, index) => {

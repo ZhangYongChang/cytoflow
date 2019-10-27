@@ -19,7 +19,7 @@
       </el-row>
     </div>
     <div id="showview" style="width:1250px;float:left">
-      <Experiment v-for="(value, key) in showtubor" :key="key" :item="value" :hisGates="hisGates" v-on:saveGate="saveGate">
+      <Experiment v-for="(value, key) in showtubor" :key="key" :item="value" :dbGate="hisGates[key]" v-on:addGate="addGate" v-on:deleteGate="deleteGate">
       </Experiment>
     </div>
     <div id="showresult" style="float:right">
@@ -51,12 +51,12 @@ export default {
       tobooptions: [],
       tobo: '',
       showtubor: {},
+      hisGates: {},
       crossFlag: false,
       crossGate: {},
       polygonFlag: false,
       polygonGate: {},
       polygonGateStat: {},
-      hisGates: {},
       result: ''
     }
   },
@@ -96,7 +96,7 @@ export default {
           if (response['data']['error_num'] !== 0) {
             this.$notify.error({ title: '错误', message: response['data']['msg'] })
           }
-          this.hisGates = response['data']['data']
+          this.refreshGate(response['data']['data'])
         })
         .catch(error => {
           this.$notify.error({ title: '错误', message: error })
@@ -111,6 +111,12 @@ export default {
   methods: {
     getKey: function (tmptubor, xaxis, yaxis) {
       return tmptubor['specimenid'] + '/' + tmptubor['filename'] + '(' + xaxis + ',' + yaxis + ')'
+    },
+    getPolygonGateKey: function (gateData, polygonGates) {
+      return gateData['specimenid'] + '/' + gateData['fcsfilename'] + '(' + polygonGates['xaxis'] + ',' + polygonGates['yaxis'] + ')'
+    },
+    getCrossGateKey: function (gateData, item) {
+      return gateData['specimenid'] + '/' + gateData['fcsfilename'] + '(' + item['xaxis'] + ',' + item['yaxis'] + ')'
     },
     clearGates: function () {
       this.crossFlag = false
@@ -146,7 +152,25 @@ export default {
         }
       }
       this.showtubor = newtubor
-      orig = null
+    },
+    refreshGate: function (gateData) {
+      var dbGates = {}
+      gateData.forEach((item) => {
+        if (item['gatetype'] === 0) {
+          var gates = JSON.parse(item['gates'])
+          gates.forEach((gate) => {
+            dbGates[this.getCrossGateKey(item, gate)] = gate['point']
+          })
+        } else {
+          var polygonGates = JSON.parse(item['gates'])
+          var result = []
+          polygonGates['gate'].forEach((polygonItem) => {
+            result.push(polygonItem['data'])
+          })
+          dbGates[this.getPolygonGateKey(item, polygonGates)] = result
+        }
+      })
+      this.hisGates = dbGates
     },
     getAxisData: function (tmptubor, xaxis, yaxis) {
       var xarray = tmptubor[xaxis]
@@ -199,6 +223,31 @@ export default {
             this.$notify.error({ title: '错误', message: error })
           })
       }
+    },
+    deleteGate: function (gateData) {
+      console.log('before delete')
+      console.log(this.crossGate)
+      console.log(this.polygonGate)
+      if (gateData['gatetype'] === 1) {
+        this.polygonFlag = false
+        this.polygonGate = {}
+        this.polygonGateStat = {}
+      } else {
+        this.crossGate['gates'] = this.crossGate['gates'].filter(function (item) {
+          return item['xaxis'] !== gateData['gates']['xaxis'] && item['yaxis'] !== gateData['gates']['yaxis']
+        })
+      }
+      console.log('after delete')
+      console.log(this.crossGate)
+      console.log(this.polygonGate)
+    },
+    addGate: function (gateData) {
+      console.log('before add')
+      console.log(gateData)
+      this.saveGate(gateData)
+      console.log('after add')
+      console.log(this.crossGate)
+      console.log(this.polygonGate)
     },
     saveGate: function (data) {
       if (data['gatetype'] === 1) {
