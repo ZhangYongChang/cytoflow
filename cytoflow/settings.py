@@ -26,7 +26,7 @@ SECRET_KEY = 'vkm1xf!1(!6+g2u(uou7+mr)hp@8!3)9n#kl%fxom-go670-&p'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '49.232.172.87']
 
 
 # Application definition
@@ -91,7 +91,7 @@ DATABASES = {
         'NAME': 'cytoflow',
         'USER': 'root',
         'PASSWORD': 'vislecaina',
-        'HOST': '127.0.0.1',
+        'HOST': 'db',
         'PORT': '3306',
     }
 }
