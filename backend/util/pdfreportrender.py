@@ -1,7 +1,7 @@
-from backend.config import (get_fcsfilepath, get_reportfilepath, get_reporttmpdir, SSC_A, PerCP_A)
-from backend.funcscale import (FuncScale, FuncScale1000)
-from backend.reporttemplate import REPORT_TEMPLATE
-from backend.models import Gate
+from backend.common.config import (get_fcsfilepath, get_reportfilepath, get_reporttmpdir, SSC_A, PerCP_A)
+from backend.util.funcscale import (FuncScale, FuncScale1000)
+from backend.util.reporttemplate import REPORT_TEMPLATE
+from backend.models.models import Gate
 from matplotlib import pyplot as plt
 from matplotlib import scale as scale
 from jinja2 import Template
