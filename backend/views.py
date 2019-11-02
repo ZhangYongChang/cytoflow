@@ -104,7 +104,6 @@ def query_specimen_fcsfiles(request):
         return em.create_fail_response(e, em.FAIL)
 
 
-# upload specimen file ok
 @require_http_methods(["POST"])
 def upload_specimen_fcsfiles(request):
     try:
@@ -130,7 +129,6 @@ def upload_specimen_fcsfiles(request):
         return em.create_fail_response(e, em.FAIL)
 
 
-# query fcs cols point ok
 @require_http_methods(["POST"])
 def query_specimen_fcsfile_data(request):
     try:
@@ -165,7 +163,7 @@ def save_spceiment_fcsfile_gate(request):
         if hisgates is not None:
             hisgates.delete()
             logger.info("delete history gate success")
-        
+
         now_time = datetime.datetime.now()
         gate = SpecimenGate(
             specimenid=params['specimenid'],
